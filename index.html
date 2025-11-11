@@ -105,41 +105,44 @@
         </div>
       </div>
 
-      <div class="row" style="margin-top:12px">
-        <div class="card">
-          <h3 style="margin-bottom:6px">Self‑rated anxiety (0–10)</h3>
-          <input id="anx" type="range" min="0" max="10" value="3"/>
-          <div class="muted">Value: <b id="anxVal">3</b> • <span id="anxTag" class="tag" style="margin-left:6px">—</span></div>
-          <div style="margin-top:10px">
-            <label>Context</label>
-            <select id="ctx">
-              <option value="rest" selected>Resting</option>
-              <option value="active">Active</option>
-            </select>
+      <div class=\"row\" style=\"margin-top:12px\">$1</section>
+
+    <section class=\"card\">
+      <h2>Focus & Memory Survey</h2>
+      <div class=\"grid-2\">
+        <div class=\"card\">
+          <label>How many minutes did you fold today?</label>
+          <input id=\"q_minutes\" type=\"number\" min=\"0\" placeholder=\"e.g., 8\"/>
+          <div style=\"margin-top:10px\">
+            <label>Could you concentrate well?</label>
+            <select id=\"q_concentrate\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
           </div>
-          <div style="margin-top:10px">
-            <label>Origami practice today?</label>
-            <select id="origami">
-              <option value="">Select…</option>
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </select>
+          <div style=\"margin-top:10px\">
+            <label>Did you feel patient during folding?</label>
+            <select id=\"q_patience\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
           </div>
-          <div style="margin-top:10px"><label>Notes</label><textarea id="notes" rows="3" placeholder="sleep, meds, walk, folding time…"></textarea></div>
-          <div class="actions" style="margin-top:12px">
-            <button id="analyze" class="pill brand">Analyze</button>
-            <button id="save" class="pill">Save</button>
-            <button id="load" class="pill ghost">Load last</button>
+          <div style=\"margin-top:10px\">
+            <label>Can you remember how to make a butterfly?</label>
+            <select id=\"q_butterfly\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
           </div>
         </div>
-        <div class="card">
-          <h3>Results</h3>
-          <div class="score" id="scoreBox" style="margin:10px 0 12px">Run an analysis</div>
-          <div id="findings"></div>
-          <p class="muted" style="margin-top:10px"><b>Practice:</b> 4‑6 breathing ×10, 5–10 min gentle walking, and simple origami folding for calm focus.</p>
-          <p class="muted"><b>Disclaimer:</b> Recreational / educational only. If readings or symptoms are concerning, consult a qualified doctor.</p>
+        <div class=\"card\">
+          <div>
+            <label>Did you feel calmer after folding?</label>
+            <select id=\"q_calm\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+          </div>
+          <div style=\"margin-top:10px\">
+            <label>Could you ignore distractions?</label>
+            <select id=\"q_ignore\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+          </div>
+          <div style=\"margin-top:10px\">
+            <label>Will you practice again tomorrow?</label>
+            <select id=\"q_tomorrow\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+          </div>
+          <p class=\"muted\" style=\"margin-top:10px\">These are self-checks to reflect on focus, memory and mood.</p>
         </div>
       </div>
+      <div class=\"actions\" style=\"margin-top:12px\"><button id=\"surveyAnalyze\" class=\"pill brand\">Include survey in analysis</button></div>
     </section>
 
     <section class="card">
@@ -267,14 +270,84 @@ const MODELS={
 };
 function modal(key){ const box=$('modal'); const map={boat:'Paper Boat',airplane:'Paper Airplane',crane:'Traditional Crane',flower:'Simple Tulip',frog:'Jumping Frog'}; $('mTitle').textContent=map[key]||'Origami'; $('mSteps').innerHTML=(MODELS[key]||[]).map(s=>`<li>${s}</li>`).join(''); box.style.display='flex'; }
 Array.from(document.querySelectorAll('.tile')).forEach(t=>t.addEventListener('click',()=>modal(t.dataset.model)));
-$('mClose').addEventListener('click',()=> $('modal').style.display='none');
-$('modal').addEventListener('click',e=>{ if(e.target.id==='modal') e.currentTarget.style.display='none'; });
+
+// Simple inline SVG thumbnails per step
+function svg(label, shape){
+  const bg = '#ffffff';
+  const border = '%23e5e7eb';
+  return `data:image/svg+xml;utf8,`+
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 160'>`+
+    `<rect width='240' height='160' rx='16' fill='${bg}' stroke='${border}'/>`+shape+
+    `<text x='12' y='148' font-size='12' fill='%2364748b'>${label}</text>`+
+    `</svg>`;
+}
+function boatImgs(){
+  return [
+    svg('Fold in half',"<path d='M20 80 H220' stroke='%2303345d' stroke-width='3'/><polygon points='120,45 132,80 108,80' fill='%2303345d'/>"),
+    svg('Corners down',"<polygon points='120,40 40,100 200,100' fill='%23a5b4fc' stroke='%233730a3'/><line x1='40' y1='60' x2='120' y2='40' stroke='%236b7280' stroke-dasharray='4'/>"),
+    svg('Open diamond',"<polygon points='120,30 40,80 120,130 200,80' fill='%2395a5ff' stroke='%233730a3'/>"),
+    svg('Open boat',"<polygon points='30,110 120,70 210,110' fill='%234f46e5' /><rect x='100' y='95' width='40' height='12' fill='%2303345d'/>")
+  ];
+}
+function planeImgs(){
+  return [
+    svg('Half + crease',"<rect x='30' y='30' width='180' height='100' fill='%23e2e8f0' stroke='%236b7280'/><line x1='120' y1='30' x2='120' y2='130' stroke='%236b7280' stroke-dasharray='6'/>"),
+    svg('Corners to center',"<polygon points='120,30 60,80 120,80' fill='%23a7f3d0'/><polygon points='120,30 120,80 180,80' fill='%23a7f3d0'/>"),
+    svg('Narrow',"<polygon points='120,30 90,110 150,110' fill='%2399f6e4' stroke='%23065f46'/>"),
+    svg('Wings',"<polygon points='120,40 60,120 180,120' fill='%234f46e5'/>")
+  ];
+}
+function craneImgs(){
+  return [
+    svg('Square base',"<polygon points='120,30 30,120 120,120 210,120' fill='%23fde68a' stroke='%236b4000'/>"),
+    svg('Long diamond',"<polygon points='120,20 80,140 120,120 160,140' fill='%23fde68a' stroke='%236b4000'/>"),
+    svg('Form head/tail',"<polyline points='120,30 80,100 120,100 160,100 120,30' fill='none' stroke='%236b4000'/>"),
+    svg('Wings out',"<path d='M60 120 Q120 60 180 120' stroke='%236b4000' fill='none' stroke-width='4'/>")
+  ];
+}
+function flowerImgs(){
+  return [
+    svg('Triangle',"<polygon points='30,120 120,30 210,120' fill='%23fecaca' stroke='%23711313'/>"),
+    svg('Diamond',"<polygon points='120,20 60,80 120,140 180,80' fill='%23fecaca' stroke='%23711313'/>"),
+    svg('Tuck sides',"<polygon points='120,20 80,90 120,140 160,90' fill='%23ffc9de' stroke='%23711313'/>"),
+    svg('Stem',"<rect x='116' y='100' width='8' height='40' fill='%230a3a1b'/>")
+  ];
+}
+function frogImgs(){
+  return [
+    svg('Waterbomb base',"<polygon points='120,30 30,80 120,130 210,80' fill='%23bbf7d0' stroke='%230a3a1b'/>"),
+    svg('Legs',"<polygon points='60,110 120,80 180,110 120,120' fill='%2393e6b5'/>"),
+    svg('Fold up',"<rect x='105' y='60' width='30' height='40' fill='%230a3a1b'/>"),
+    svg('Jump',"<path d='M40 120 Q120 60 200 120' stroke='%230a3a1b' fill='none' stroke-width='4'/>")
+  ];
+}
+const MODEL_IMGS={boat:boatImgs,airplane:planeImgs,crane:craneImgs,flower:flowerImgs,frog:frogImgs};
+
+function modal(key){ const box=$('modal'); const map={boat:'Paper Boat',airplane:'Paper Airplane',crane:'Traditional Crane',flower:'Simple Tulip',frog:'Jumping Frog'}; $('mTitle').textContent=map[key]||'Origami'; const steps=(MODELS[key]||[]); $('mSteps').innerHTML=steps.map(s=>`<li>${s}</li>`).join(''); const imgs=(MODEL_IMGS[key]||(()=>[]))(); const imgGrid=document.createElement('div'); imgGrid.style.display='grid'; imgGrid.style.gridTemplateColumns='repeat(4,1fr)'; imgGrid.style.gap='8px'; imgs.forEach(src=>{ const im=new Image(); im.src=src; im.style.width='100%'; im.style.border='1px solid #e5e7eb'; im.style.borderRadius='8px'; imgGrid.appendChild(im); }); const boxEl=document.querySelector('#modal .box'); const old=document.querySelector('#modal .box .imggrid'); if(old) old.remove(); imgGrid.className='imggrid'; boxEl.insertBefore(imgGrid, $('mSteps')); box.style.display='flex'; }
 
 // init
 $('yr').textContent=new Date().getFullYear();
 interpret();
-</script>
-</body>
-</html>
+
+function scoreSurvey(){
+  const map={'Yes':2,'Maybe':1,'No':0};
+  const m = parseInt(($('q_minutes').value||'0'),10);
+  const s = ['q_concentrate','q_patience','q_butterfly','q_calm','q_ignore','q_tomorrow']
+    .map(id=>map[$(id).value]||0)
+    .reduce((a,b)=>a+b,0);
+  const boost = (m>=5?1:0)+(m>=10?1:0); // small bonus for practice time
+  return s + boost; // out of 14
+}
+
+$('surveyAnalyze').addEventListener('click', ()=>{
+  analyze();
+  const sv = scoreSurvey();
+  const tag = sv>=10? 'Great focus & recall' : sv>=6? 'Mixed — keep practicing' : 'Low today — try shorter sessions';
+  const extra = `<div style='margin-top:8px'><b>Survey:</b> ${sv}/14 — ${tag}. Minutes: ${$('q_minutes').value||0}. Concentrate: ${$('q_concentrate').value||'-'}, Patience: ${$('q_patience').value||'-'}, Butterfly memory: ${$('q_butterfly').value||'-'}, Calm: ${$('q_calm').value||'-'}, Ignore distractions: ${$('q_ignore').value||'-'}, Practice tomorrow: ${$('q_tomorrow').value||'-'}.</div>`;
+  const f = document.getElementById('findings');
+  f.innerHTML = f.innerHTML + extra;
+});
+
+
 
 
