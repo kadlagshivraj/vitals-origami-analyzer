@@ -4,52 +4,43 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Vitals & Origami Analyzer — Kadlag Shivraj</title>
-<meta name="description" content="Neat, printable analyzer for BPM, BRPM, SPM, BP, SpO2, anxiety + origami studio and gallery. Educational only, not medical advice.">
+<meta name="description" content="Neat, printable analyzer for BPM, BRPM, SPM, BP, SpO2, anxiety + origami studio and gallery with visual steps. Educational only, not medical advice.">
 <style>
-  :root{
-    --bg:#0f172a;        /* page bg */
-    --card:#ffffff;      /* card bg */
-    --ink:#0f172a;       /* text */
-    --muted:#64748b;     /* muted text */
-    --brand:#4f46e5;     /* indigo */
-    --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
-    --chip:#f1f5f9;      /* chip bg */
-    --border:#e5e7eb;    /* light border */
-  }
+  :root{ --border:#e5e7eb; --brand:#4f46e5; --ink:#0f172a; --muted:#64748b; }
   *{box-sizing:border-box}
   body{margin:0;background:#f6f7fb;color:var(--ink);font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
-  h1,h2,h3{margin:0 0 .4rem}
+  h1,h2,h3{margin:0 0 .5rem}
   .wrap{max-width:1100px;margin:auto;padding:16px}
   header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--border)}
   header .bar{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 0}
   .title{font-weight:800;font-size:22px}
+  .card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 4px 16px rgba(15,23,42,.05);margin-bottom:14px}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 4px 16px rgba(15,23,42,.05)}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  label{font-weight:600;font-size:14px;margin-bottom:6px;display:block}
+  input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:12px;font:inherit;background:#fff}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
   .pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;border:1px solid var(--border);background:#fff;padding:8px 12px;font-weight:600;font-size:13px;cursor:pointer}
   .pill.brand{background:var(--brand);color:#fff;border-color:var(--brand)}
   .pill.ghost{background:#f8fafc}
-  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  label{font-weight:600;font-size:14px;margin-bottom:6px;display:block}
-  input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:12px;font:inherit}
   .tag{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-weight:700;font-size:12px;background:#eef2ff;color:#3730a3}
   .tag.ok{background:#ecfdf5;color:#065f46}
   .tag.warn{background:#fffbeb;color:#7c2d12}
   .tag.bad{background:#fef2f2;color:#7f1d1d}
-  .actions{display:flex;flex-wrap:wrap;gap:8px}
   .muted{color:var(--muted);font-size:13px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .score{background:#111827;color:#fff;border-radius:14px;padding:16px}
   .gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
   .tile{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease}
   .tile:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(15,23,42,.12)}
   .thumb{aspect-ratio:1/1;display:grid;place-items:center;font-size:60px}
   .tile h4{margin:0;padding:10px 12px;border-top:1px solid var(--border);font-size:14px}
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px}
-  .modal .box{background:#fff;border-radius:16px;max-width:640px;width:100%;padding:16px;border:1px solid var(--border)}
+  .modal .box{background:#fff;border-radius:16px;max-width:760px;width:100%;padding:16px;border:1px solid var(--border)}
   .list{padding-left:18px}
   .list li{margin:.25rem 0}
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .score{background:#111827;color:#fff;border-radius:14px;padding:16px}
   footer{margin:24px 0 40px;color:var(--muted);font-size:12px}
-  @media (max-width:900px){.row{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:900px){.row{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -57,100 +48,130 @@
     <div class="wrap bar">
       <div class="title">Vitals & Origami Analyzer — <span style="color:var(--brand)">Kadlag Shivraj</span></div>
       <div class="actions">
-        <button id="demo" class="pill">Demo</button>
-        <button id="reset" class="pill ghost">Reset</button>
-        <button id="printBtn" class="pill brand">Print / PDF</button>
+        <button id="demo" class="pill" type="button">Demo</button>
+        <button id="reset" class="pill ghost" type="button">Reset</button>
+        <button id="printBtn" class="pill brand" type="button">Print / PDF</button>
       </div>
     </div>
   </header>
 
   <main class="wrap" id="app">
-    <section class="card">
+    <section class="card" id="measure">
       <h2>Enter Measurements</h2>
       <p class="muted">Educational only — not medical advice.</p>
+
       <div class="row">
         <div class="grid-3">
           <div>
             <label>Heart rate (BPM)</label>
-            <input id="bpm" type="number" placeholder="72"/>
+            <input id="bpm" type="number" placeholder="72" />
             <div id="bpmTag" class="tag" style="margin-top:6px">—</div>
           </div>
           <div>
             <label>Breaths/min (BRPM)</label>
-            <input id="brpm" type="number" placeholder="14"/>
+            <input id="brpm" type="number" placeholder="14" />
             <div id="brpmTag" class="tag" style="margin-top:6px">—</div>
           </div>
           <div>
             <label>Steps/min (SPM)</label>
-            <input id="spm" type="number" placeholder="110"/>
+            <input id="spm" type="number" placeholder="110" />
             <div id="spmTag" class="tag" style="margin-top:6px">—</div>
           </div>
         </div>
         <div class="grid-3">
           <div>
             <label>Systolic BP</label>
-            <input id="sys" type="number" placeholder="120"/>
+            <input id="sys" type="number" placeholder="120" />
             <div id="sysTag" class="tag" style="margin-top:6px">—</div>
           </div>
           <div>
             <label>Diastolic BP</label>
-            <input id="dia" type="number" placeholder="80"/>
+            <input id="dia" type="number" placeholder="80" />
             <div id="diaTag" class="tag" style="margin-top:6px">—</div>
           </div>
           <div>
             <label>SpO₂ (%)</label>
-            <input id="spo2" type="number" placeholder="98"/>
+            <input id="spo2" type="number" placeholder="98" />
             <div id="spo2Tag" class="tag" style="margin-top:6px">—</div>
           </div>
         </div>
       </div>
 
-      <div class=\"row\" style=\"margin-top:12px\">$1</section>
-
-    <section class=\"card\">
-      <h2>Focus & Memory Survey</h2>
-      <div class=\"grid-2\">
-        <div class=\"card\">
-          <label>How many minutes did you fold today?</label>
-          <input id=\"q_minutes\" type=\"number\" min=\"0\" placeholder=\"e.g., 8\"/>
-          <div style=\"margin-top:10px\">
-            <label>Could you concentrate well?</label>
-            <select id=\"q_concentrate\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+      <div class="row" style="margin-top:12px">
+        <div class="card">
+          <h3>Self‑rated anxiety (0–10)</h3>
+          <input id="anx" type="range" min="0" max="10" value="3" />
+          <div class="muted">Value: <b id="anxVal">3</b> • <span id="anxTag" class="tag" style="margin-left:6px">—</span></div>
+          <div style="margin-top:10px">
+            <label>Context</label>
+            <select id="ctx">
+              <option value="rest" selected>Resting</option>
+              <option value="active">Active</option>
+            </select>
           </div>
-          <div style=\"margin-top:10px\">
-            <label>Did you feel patient during folding?</label>
-            <select id=\"q_patience\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+          <div style="margin-top:10px">
+            <label>Origami practice today?</label>
+            <select id="origami">
+              <option value="">Select…</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
           </div>
-          <div style=\"margin-top:10px\">
-            <label>Can you remember how to make a butterfly?</label>
-            <select id=\"q_butterfly\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+          <div style="margin-top:10px"><label>Notes</label><textarea id="notes" rows="3" placeholder="sleep, meds, walk, folding time…"></textarea></div>
+          <div class="actions" style="margin-top:12px">
+            <button id="analyze" class="pill brand" type="button">Analyze</button>
+            <button id="save" class="pill" type="button">Save</button>
+            <button id="load" class="pill ghost" type="button">Load last</button>
           </div>
         </div>
-        <div class=\"card\">
-          <div>
-            <label>Did you feel calmer after folding?</label>
-            <select id=\"q_calm\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
-          </div>
-          <div style=\"margin-top:10px\">
-            <label>Could you ignore distractions?</label>
-            <select id=\"q_ignore\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
-          </div>
-          <div style=\"margin-top:10px\">
-            <label>Will you practice again tomorrow?</label>
-            <select id=\"q_tomorrow\"><option value=\"\"></option><option>Yes</option><option>Maybe</option><option>No</option></select>
-          </div>
-          <p class=\"muted\" style=\"margin-top:10px\">These are self-checks to reflect on focus, memory and mood.</p>
+        <div class="card">
+          <h3>Results</h3>
+          <div class="score" id="scoreBox" style="margin:10px 0 12px">Run an analysis</div>
+          <div id="findings"></div>
+          <p class="muted" style="margin-top:10px"><b>Practice:</b> 4‑6 breathing ×10, 5–10 min gentle walking, and simple origami folding for calm focus.</p>
+          <p class="muted"><b>Disclaimer:</b> Recreational / educational only. If readings or symptoms are concerning, consult a qualified doctor.</p>
         </div>
       </div>
-      <div class=\"actions\" style=\"margin-top:12px\"><button id=\"surveyAnalyze\" class=\"pill brand\">Include survey in analysis</button></div>
     </section>
 
-    <section class="card">
+    <section class="card" id="survey">
+      <h2>Focus & Memory Survey</h2>
+      <div class="grid-2">
+        <div class="card">
+          <label>How many minutes did you fold today?</label>
+          <input id="q_minutes" type="number" min="0" placeholder="e.g., 8" />
+          <div style="margin-top:10px"><label>Could you concentrate well?</label>
+            <select id="q_concentrate"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+          </div>
+          <div style="margin-top:10px"><label>Did you feel patient during folding?</label>
+            <select id="q_patience"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+          </div>
+          <div style="margin-top:10px"><label>Can you remember how to make a butterfly?</label>
+            <select id="q_butterfly"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+          </div>
+        </div>
+        <div class="card">
+          <div><label>Did you feel calmer after folding?</label>
+            <select id="q_calm"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+          </div>
+          <div style="margin-top:10px"><label>Could you ignore distractions?</label>
+            <select id="q_ignore"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+          </div>
+          <div style="margin-top:10px"><label>Will you practice again tomorrow?</label>
+            <select id="q_tomorrow"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+          </div>
+          <p class="muted" style="margin-top:10px">These are self-checks to reflect on focus, memory and mood.</p>
+        </div>
+      </div>
+      <div class="actions" style="margin-top:12px"><button id="surveyAnalyze" class="pill brand" type="button">Include survey in analysis</button></div>
+    </section>
+
+    <section class="card" id="studio">
       <h2>Origami Studio</h2>
       <div class="grid-2">
         <div class="card">
           <h3>Box Breathing (4‑4‑4‑4)</h3>
-          <div class="actions" style="margin:8px 0"><button id="breathStart" class="pill brand">Start</button><button id="breathStop" class="pill">Stop</button><span id="breathPhase" class="muted">Ready</span></div>
+          <div class="actions" style="margin:8px 0"><button id="breathStart" class="pill brand" type="button">Start</button><button id="breathStop" class="pill" type="button">Stop</button><span id="breathPhase" class="muted">Ready</span></div>
           <div style="height:120px;border:1px dashed var(--border);border-radius:12px;display:grid;place-items:center">
             <div id="ball" style="width:48px;height:48px;border-radius:50%;background:var(--brand);"></div>
           </div>
@@ -169,7 +190,7 @@
       </div>
     </section>
 
-    <section class="card">
+    <section class="card" id="gallery">
       <h2>Origami Gallery</h2>
       <p class="muted" style="margin-bottom:8px">Tap a model to see neat, printable steps.</p>
       <div class="gallery">
@@ -185,18 +206,18 @@
       <div class="box">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <h3 id="mTitle" style="margin:0"></h3>
-          <button id="mClose" class="pill">Close</button>
+          <button id="mClose" class="pill" type="button">Close</button>
         </div>
+        <div id="mImgs" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px"></div>
         <ol id="mSteps" class="list"></ol>
       </div>
     </div>
 
-    <footer class="wrap">
-      © <span id="yr"></span> • Built by Kadlag Shivraj • Educational only
-    </footer>
+    <footer class="wrap">© <span id="yr"></span> • Built by Kadlag Shivraj • Educational only</footer>
   </main>
 
 <script>
+// helper
 const $ = id => document.getElementById(id);
 function tag(el, text, tone){ el.textContent = text; el.className = 'tag ' + (tone||''); }
 $('anx').addEventListener('input', ()=> $('anxVal').textContent = $('anx').value);
@@ -204,21 +225,12 @@ $('anx').addEventListener('input', ()=> $('anxVal').textContent = $('anx').value
 function interpret(){
   const ctx = $('ctx').value;
   const v={ bpm:+$('bpm').value||NaN, brpm:+$('brpm').value||NaN, spm:+$('spm').value||NaN, sys:+$('sys').value||NaN, dia:+$('dia').value||NaN, spo2:+$('spo2').value||NaN, anx:+$('anx').value||0 };
-  // BPM
-  if(!isNaN(v.bpm)){
-    let t='ok',x='Normal'; if(ctx==='rest'){ if(v.bpm<50){t='warn';x='Low'} if(v.bpm<40){t='bad';x='Bradycardia'} if(v.bpm>90){t='warn';x='High'} if(v.bpm>100){t='bad';x='Tachycardia'} } else { if(v.bpm<70){t='warn';x='Low for activity'} if(v.bpm>180){t='bad';x='Very high'} }
-    tag($('bpmTag'),x,t);
-  } else tag($('bpmTag'),'—');
-  // BRPM
+  if(!isNaN(v.bpm)){ let t='ok',x='Normal'; if(ctx==='rest'){ if(v.bpm<50){t='warn';x='Low'} if(v.bpm<40){t='bad';x='Bradycardia'} if(v.bpm>90){t='warn';x='High'} if(v.bpm>100){t='bad';x='Tachycardia'} } else { if(v.bpm<70){t='warn';x='Low for activity'} if(v.bpm>180){t='bad';x='Very high'} } tag($('bpmTag'),x,t);} else tag($('bpmTag'),'—');
   if(!isNaN(v.brpm)){ let t='ok',x='Normal'; if(v.brpm<10){t='warn';x='Low'} if(v.brpm<8){t='bad';x='Very low'} if(v.brpm>20){t='warn';x='High'} if(v.brpm>24){t='bad';x='Very high'}; tag($('brpmTag'),x,t);} else tag($('brpmTag'),'—');
-  // SPM
   if(!isNaN(v.spm)){ let t='ok',x='Moderate walk'; if(v.spm<60){t='warn';x='Very easy'} if(v.spm>=90&&v.spm<120){t='ok';x='Brisk'} if(v.spm>=140){t='warn';x='Near jog'}; tag($('spmTag'),x,t);} else tag($('spmTag'),'—');
-  // BP
   function bpCat(s,d){ if(s>=180||d>=120) return ['Hypertensive crisis','bad']; if(s>=140||d>=90) return ['Hypertension (Stage 2)','bad']; if((s>=130&&s<=139)||(d>=80&&d<=89)) return ['Hypertension (Stage 1)','warn']; if(s>=120&&s<=129&&d<80) return ['Elevated','warn']; if(s<120&&d<80) return ['Normal','ok']; return ['—','']; }
   if(!isNaN(v.sys)&&!isNaN(v.dia)){ const [txt,t] = bpCat(v.sys,v.dia); tag($('sysTag'),txt,t); tag($('diaTag'),txt,t); } else { tag($('sysTag'),'—'); tag($('diaTag'),'—'); }
-  // SpO2
   if(!isNaN(v.spo2)){ let t='ok',x='Normal'; if(v.spo2<95){t='warn';x='Below normal'} if(v.spo2<92){t='bad';x='Low'}; tag($('spo2Tag'),x,t);} else tag($('spo2Tag'),'—');
-  // Anxiety
   let at='ok',ax='Low'; if(v.anx>=4&&v.anx<=6){at='warn';ax='Moderate'} if(v.anx>=7){at='bad';ax='High'}; tag($('anxTag'),ax,at);
   return v;
 }
@@ -250,17 +262,18 @@ function analyze(){
   $('findings').innerHTML = '<div>'+parts.join('<br>')+'</div>';
 }
 
+// buttons
 $('analyze').addEventListener('click', analyze);
 $('demo').addEventListener('click', ()=>{ $('bpm').value=76; $('brpm').value=14; $('spm').value=112; $('sys').value=124; $('dia').value=82; $('spo2').value=97; $('anx').value=4; $('anxVal').textContent='4'; $('origami').value='yes'; interpret(); });
 $('reset').addEventListener('click', ()=>{ document.querySelectorAll('input,textarea,select').forEach(x=>{ if(x.type==='range') x.value=3; else x.value=''; }); $('ctx').value='rest'; $('anxVal').textContent='3'; ['bpmTag','brpmTag','spmTag','sysTag','diaTag','spo2Tag','anxTag'].forEach(id=>tag($(id),'—')); $('findings').innerHTML=''; $('scoreBox').textContent='Run an analysis'; });
 $('printBtn').addEventListener('click', ()=>window.print());
 $('save').addEventListener('click', ()=>{ const payload={ ts:new Date().toISOString(), ctx:$('ctx').value, bpm:$('bpm').value, brpm:$('brpm').value, spm:$('spm').value, sys:$('sys').value, dia:$('dia').value, spo2:$('spo2').value, anx:$('anx').value, origami:$('origami').value, notes:$('notes').value }; localStorage.setItem('vitals_last', JSON.stringify(payload)); alert('Saved in this browser.'); });
-$('load').addEventListener('click', ()=>{ const raw=localStorage.getItem('vitals_last'); if(!raw) return alert('No saved session'); const p=JSON.parse(raw); ['bpm','brpm','spm','sys','dia','spo2','anx','notes','ctx','origami'].forEach(k=>{ if($(k)) $(k).value=p[k]??$(k).value; }); $('anxVal').textContent=$('anx').value; interpret(); });
+$('load').addEventListener('click', ()=>{ const raw=localStorage.getItem('vitals_last'); if(!raw) return alert('No saved session'); const p=JSON.parse(raw); ['bpm','brpm','spm','sys','dia','spo2','anx','notes','ctx','origami'].forEach(k=>{ if($(k) && p[k]!==undefined) $(k).value=p[k]; }); $('anxVal').textContent=$('anx').value; interpret(); });
 
 // Breathing ball
 let breath=null; $('breathStart').addEventListener('click',()=>{ clearInterval(breath); let t=0; $('breathPhase').textContent='Inhale'; $('ball').style.transform='scale(0.8)'; breath=setInterval(()=>{ t=(t+1)%16; const phase=Math.floor(t/4); const map=['Inhale','Hold','Exhale','Hold']; $('breathPhase').textContent=map[phase]; const sz=[0.8,1.0,0.8,0.7][phase]; $('ball').style.transform=`scale(${sz})`; },1000); }); $('breathStop').addEventListener('click',()=>{ clearInterval(breath); $('breathPhase').textContent='Ready'; $('ball').style.transform='scale(1)'; });
 
-// Gallery modal
+// Gallery modal content
 const MODELS={
   boat:['Fold A4 in half (short sides).','Fold top corners down to center (hat).','Fold bottom flap up; flip; fold other flap up.','Open into diamond; flatten.','Fold bottom point up; flip; repeat.','Pull top corners apart to open the boat.'],
   airplane:['Fold A4 in half lengthwise; unfold.','Top corners to center crease.','Top edges to center again.','Fold in half.','Fold wings down to bottom edge.','Add small wing tips; gentle throw.'],
@@ -268,85 +281,61 @@ const MODELS={
   flower:['Square to triangle.','Corners up to top (diamond).','Tuck side points behind slightly.','Fold bottom tips up (front and back).','Add rolled stem and insert.'],
   frog:['3:2 rectangle.','Make waterbomb base at top.','Sides to center; bottom up.','Rear legs out; fold bottom up and in half.','Press and release to jump!']
 };
-function modal(key){ const box=$('modal'); const map={boat:'Paper Boat',airplane:'Paper Airplane',crane:'Traditional Crane',flower:'Simple Tulip',frog:'Jumping Frog'}; $('mTitle').textContent=map[key]||'Origami'; $('mSteps').innerHTML=(MODELS[key]||[]).map(s=>`<li>${s}</li>`).join(''); box.style.display='flex'; }
-Array.from(document.querySelectorAll('.tile')).forEach(t=>t.addEventListener('click',()=>modal(t.dataset.model)));
 
-// Simple inline SVG thumbnails per step
+// Simple inline SVG thumbnails for each model
 function svg(label, shape){
-  const bg = '#ffffff';
-  const border = '%23e5e7eb';
-  return `data:image/svg+xml;utf8,`+
+  const bg = '#ffffff'; const border = '%23e5e7eb';
+  return 'data:image/svg+xml;utf8,'+
     `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 160'>`+
     `<rect width='240' height='160' rx='16' fill='${bg}' stroke='${border}'/>`+shape+
     `<text x='12' y='148' font-size='12' fill='%2364748b'>${label}</text>`+
     `</svg>`;
 }
-function boatImgs(){
-  return [
-    svg('Fold in half',"<path d='M20 80 H220' stroke='%2303345d' stroke-width='3'/><polygon points='120,45 132,80 108,80' fill='%2303345d'/>"),
-    svg('Corners down',"<polygon points='120,40 40,100 200,100' fill='%23a5b4fc' stroke='%233730a3'/><line x1='40' y1='60' x2='120' y2='40' stroke='%236b7280' stroke-dasharray='4'/>"),
-    svg('Open diamond',"<polygon points='120,30 40,80 120,130 200,80' fill='%2395a5ff' stroke='%233730a3'/>"),
-    svg('Open boat',"<polygon points='30,110 120,70 210,110' fill='%234f46e5' /><rect x='100' y='95' width='40' height='12' fill='%2303345d'/>")
-  ];
-}
-function planeImgs(){
-  return [
-    svg('Half + crease',"<rect x='30' y='30' width='180' height='100' fill='%23e2e8f0' stroke='%236b7280'/><line x1='120' y1='30' x2='120' y2='130' stroke='%236b7280' stroke-dasharray='6'/>"),
-    svg('Corners to center',"<polygon points='120,30 60,80 120,80' fill='%23a7f3d0'/><polygon points='120,30 120,80 180,80' fill='%23a7f3d0'/>"),
-    svg('Narrow',"<polygon points='120,30 90,110 150,110' fill='%2399f6e4' stroke='%23065f46'/>"),
-    svg('Wings',"<polygon points='120,40 60,120 180,120' fill='%234f46e5'/>")
-  ];
-}
-function craneImgs(){
-  return [
-    svg('Square base',"<polygon points='120,30 30,120 120,120 210,120' fill='%23fde68a' stroke='%236b4000'/>"),
-    svg('Long diamond',"<polygon points='120,20 80,140 120,120 160,140' fill='%23fde68a' stroke='%236b4000'/>"),
-    svg('Form head/tail',"<polyline points='120,30 80,100 120,100 160,100 120,30' fill='none' stroke='%236b4000'/>"),
-    svg('Wings out',"<path d='M60 120 Q120 60 180 120' stroke='%236b4000' fill='none' stroke-width='4'/>")
-  ];
-}
-function flowerImgs(){
-  return [
-    svg('Triangle',"<polygon points='30,120 120,30 210,120' fill='%23fecaca' stroke='%23711313'/>"),
-    svg('Diamond',"<polygon points='120,20 60,80 120,140 180,80' fill='%23fecaca' stroke='%23711313'/>"),
-    svg('Tuck sides',"<polygon points='120,20 80,90 120,140 160,90' fill='%23ffc9de' stroke='%23711313'/>"),
-    svg('Stem',"<rect x='116' y='100' width='8' height='40' fill='%230a3a1b'/>")
-  ];
-}
-function frogImgs(){
-  return [
-    svg('Waterbomb base',"<polygon points='120,30 30,80 120,130 210,80' fill='%23bbf7d0' stroke='%230a3a1b'/>"),
-    svg('Legs',"<polygon points='60,110 120,80 180,110 120,120' fill='%2393e6b5'/>"),
-    svg('Fold up',"<rect x='105' y='60' width='30' height='40' fill='%230a3a1b'/>"),
-    svg('Jump',"<path d='M40 120 Q120 60 200 120' stroke='%230a3a1b' fill='none' stroke-width='4'/>")
-  ];
-}
+function boatImgs(){ return [
+  svg('Fold in half',"<path d='M20 80 H220' stroke='%2303345d' stroke-width='3'/><polygon points='120,45 132,80 108,80' fill='%2303345d'/>"),
+  svg('Corners down',"<polygon points='120,40 40,100 200,100' fill='%23a5b4fc' stroke='%233730a3'/>"),
+  svg('Open diamond',"<polygon points='120,30 40,80 120,130 200,80' fill='%2395a5ff' stroke='%233730a3'/>"),
+  svg('Open boat',"<polygon points='30,110 120,70 210,110' fill='%234f46e5' />") ]; }
+function planeImgs(){ return [
+  svg('Half + crease',"<rect x='30' y='30' width='180' height='100' fill='%23e2e8f0' stroke='%236b7280'/><line x1='120' y1='30' x2='120' y2='130' stroke='%236b7280' stroke-dasharray='6'/>"),
+  svg('Corners to center',"<polygon points='120,30 60,80 120,80' fill='%23a7f3d0'/><polygon points='120,30 120,80 180,80' fill='%23a7f3d0'/>"),
+  svg('Wings',"<polygon points='120,40 60,120 180,120' fill='%234f46e5'/>") ]; }
+function craneImgs(){ return [
+  svg('Square base',"<polygon points='120,30 30,120 120,120 210,120' fill='%23fde68a' stroke='%236b4000'/>"),
+  svg('Long diamond',"<polygon points='120,20 80,140 120,120 160,140' fill='%23fde68a' stroke='%236b4000'/>"),
+  svg('Wings out',"<path d='M60 120 Q120 60 180 120' stroke='%236b4000' fill='none' stroke-width='4'/>") ]; }
+function flowerImgs(){ return [
+  svg('Triangle',"<polygon points='30,120 120,30 210,120' fill='%23fecaca' stroke='%23711313'/>"),
+  svg('Diamond',"<polygon points='120,20 60,80 120,140 180,80' fill='%23fecaca' stroke='%23711313'/>"),
+  svg('Stem',"<rect x='116' y='100' width='8' height='40' fill='%230a3a1b'/>") ]; }
+function frogImgs(){ return [
+  svg('Waterbomb base',"<polygon points='120,30 30,80 120,130 210,80' fill='%23bbf7d0' stroke='%230a3a1b'/>"),
+  svg('Fold up',"<rect x='105' y='60' width='30' height='40' fill='%230a3a1b'/>"),
+  svg('Jump',"<path d='M40 120 Q120 60 200 120' stroke='%230a3a1b' fill='none' stroke-width='4'/>") ]; }
 const MODEL_IMGS={boat:boatImgs,airplane:planeImgs,crane:craneImgs,flower:flowerImgs,frog:frogImgs};
 
-function modal(key){ const box=$('modal'); const map={boat:'Paper Boat',airplane:'Paper Airplane',crane:'Traditional Crane',flower:'Simple Tulip',frog:'Jumping Frog'}; $('mTitle').textContent=map[key]||'Origami'; const steps=(MODELS[key]||[]); $('mSteps').innerHTML=steps.map(s=>`<li>${s}</li>`).join(''); const imgs=(MODEL_IMGS[key]||(()=>[]))(); const imgGrid=document.createElement('div'); imgGrid.style.display='grid'; imgGrid.style.gridTemplateColumns='repeat(4,1fr)'; imgGrid.style.gap='8px'; imgs.forEach(src=>{ const im=new Image(); im.src=src; im.style.width='100%'; im.style.border='1px solid #e5e7eb'; im.style.borderRadius='8px'; imgGrid.appendChild(im); }); const boxEl=document.querySelector('#modal .box'); const old=document.querySelector('#modal .box .imggrid'); if(old) old.remove(); imgGrid.className='imggrid'; boxEl.insertBefore(imgGrid, $('mSteps')); box.style.display='flex'; }
+function openModel(key){
+  $('mTitle').textContent = ({boat:'Paper Boat',airplane:'Paper Airplane',crane:'Traditional Crane',flower:'Simple Tulip',frog:'Jumping Frog'})[key] || 'Origami';
+  const steps = MODELS[key] || [];
+  const imgs = (MODEL_IMGS[key]||(()=>[]))();
+  $('mSteps').innerHTML = steps.map(s=>`<li>${s}</li>`).join('');
+  $('mImgs').innerHTML = imgs.map(src=>`<img src="${src}" style="width:100%;border:1px solid #e5e7eb;border-radius:8px">`).join('');
+  document.getElementById('modal').style.display='flex';
+}
+Array.from(document.querySelectorAll('.tile')).forEach(t=>t.addEventListener('click',()=>openModel(t.dataset.model)));
+$('mClose').addEventListener('click',()=> document.getElementById('modal').style.display='none');
+document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') e.currentTarget.style.display='none'; });
 
 // init
 $('yr').textContent=new Date().getFullYear();
 interpret();
 
-function scoreSurvey(){
-  const map={'Yes':2,'Maybe':1,'No':0};
-  const m = parseInt(($('q_minutes').value||'0'),10);
-  const s = ['q_concentrate','q_patience','q_butterfly','q_calm','q_ignore','q_tomorrow']
-    .map(id=>map[$(id).value]||0)
-    .reduce((a,b)=>a+b,0);
-  const boost = (m>=5?1:0)+(m>=10?1:0); // small bonus for practice time
-  return s + boost; // out of 14
-}
-
-$('surveyAnalyze').addEventListener('click', ()=>{
-  analyze();
-  const sv = scoreSurvey();
-  const tag = sv>=10? 'Great focus & recall' : sv>=6? 'Mixed — keep practicing' : 'Low today — try shorter sessions';
-  const extra = `<div style='margin-top:8px'><b>Survey:</b> ${sv}/14 — ${tag}. Minutes: ${$('q_minutes').value||0}. Concentrate: ${$('q_concentrate').value||'-'}, Patience: ${$('q_patience').value||'-'}, Butterfly memory: ${$('q_butterfly').value||'-'}, Calm: ${$('q_calm').value||'-'}, Ignore distractions: ${$('q_ignore').value||'-'}, Practice tomorrow: ${$('q_tomorrow').value||'-'}.</div>`;
-  const f = document.getElementById('findings');
-  f.innerHTML = f.innerHTML + extra;
-});
+// survey include
+function scoreSurvey(){ const map={'Yes':2,'Maybe':1,'No':0}; const m=parseInt(($('q_minutes').value||'0'),10); const s=['q_concentrate','q_patience','q_butterfly','q_calm','q_ignore','q_tomorrow'].map(id=>map[$(id).value]||0).reduce((a,b)=>a+b,0); const boost=(m>=5?1:0)+(m>=10?1:0); return s+boost; }
+$('surveyAnalyze').addEventListener('click',()=>{ analyze(); const sv=scoreSurvey(); const tag = sv>=10? 'Great focus & recall' : sv>=6? 'Mixed — keep practicing' : 'Low today — try shorter sessions'; const extra = `<div style='margin-top:8px'><b>Survey:</b> ${sv}/14 — ${tag}. Minutes: ${$('q_minutes').value||0}. Concentrate: ${$('q_concentrate').value||'-'}, Patience: ${$('q_patience').value||'-'}, Butterfly memory: ${$('q_butterfly').value||'-'}, Calm: ${$('q_calm').value||'-'}, Ignore distractions: ${$('q_ignore').value||'-'}, Practice tomorrow: ${$('q_tomorrow').value||'-'}.</div>`; const f=$('findings'); f.innerHTML = f.innerHTML + extra; });
+</script>
+</body>
+</html>
 
 
 
