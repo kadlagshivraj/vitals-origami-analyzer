@@ -21,11 +21,16 @@
 <body class="bg-slate-50 text-slate-800">
   <header class="noprint sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-slate-200">
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-      <h1 class="text-xl md:text-2xl font-extrabold tracking-tight">Vitals & Anxiety Analyzer</h1>
-      <div class="flex gap-2">
-        <button id="btnDemo" class="pill bg-slate-900 text-white">Demo data</button>
-        <button id="btnReset" class="pill bg-slate-200">Reset</button>
-        <button id="btnPrint" class="pill bg-indigo-600 text-white">Print / PDF</button>
+      <div class=\"flex items-center gap-3\">
+        <h1 class=\"text-xl md:text-2xl font-extrabold tracking-tight\">Vitals & Origami Analyzer</h1>
+        <span class=\"hidden md:inline pill bg-slate-100 text-slate-700\">by Kadlag Shivraj</span>
+      </div>
+      <div class=\"flex gap-2\">
+        <button id=\"btnDark\" class=\"pill bg-slate-200\">Dark</button>
+        <button id=\"btnDemo\" class=\"pill bg-slate-900 text-white\">Demo data</button>
+        <button id=\"btnReset\" class=\"pill bg-slate-200\">Reset</button>
+        <button id=\"btnExport\" class=\"pill bg-emerald-600 text-white\">Export CSV</button>
+        <button id=\"btnPrint\" class=\"pill bg-indigo-600 text-white\">Print / PDF</button>
       </div>
     </div>
   </header>
@@ -116,8 +121,86 @@
       </div>
     </section>
 
-    <footer class="text-xs text-slate-500 pb-10">
-      <p>© <span id="yr"></span> Vitals & Anxiety Analyzer • Recreational / educational only • If this is an emergency, call local medical services immediately.</p>
+    <section class=\"card\">
+      <h2 class=\"text-lg md:text-xl font-bold mb-3\">Origami Studio</h2>
+      <div class=\"grid md:grid-cols-3 gap-4\">
+        <div class=\"rounded-2xl p-5 bg-white border border-slate-200\">
+          <h3 class=\"font-semibold\">Box Breathing (4-4-4-4)</h3>
+          <div class=\"mt-2 flex items-center gap-3\">
+            <button id=\"breathStart\" class=\"pill bg-slate-900 text-white\">Start</button>
+            <button id=\"breathStop\" class=\"pill bg-slate-200\">Stop</button>
+            <span id=\"breathPhase\" class=\"text-sm text-slate-600\">Ready</span>
+          </div>
+          <div class=\"mt-3 w-full h-28 bg-slate-100 rounded-xl overflow-hidden relative\">
+            <div id=\"breathBall\" class=\"absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-indigo-500\"></div>
+          </div>
+          <p class=\"text-xs text-slate-500 mt-2\">Follow the ball: inhale → hold → exhale → hold. 1–3 minutes before measurement.</p>
+        </div>
+        <div class=\"rounded-2xl p-5 bg-white border border-slate-200\">
+          <h3 class=\"font-semibold\">Folding Metronome</h3>
+          <label class=\"text-sm\">Folds per minute</label>
+          <input id=\"foldFPM\" type=\"range\" min=\"6\" max=\"18\" value=\"10\" class=\"w-full\"/>
+          <div class=\"text-sm mt-1\"><span id=\"foldFPMVal\">10</span> fpm</div>
+          <div class=\"mt-2 flex gap-3\">
+            <button id=\"metroStart\" class=\"pill bg-slate-900 text-white\">Start</button>
+            <button id=\"metroStop\" class=\"pill bg-slate-200\">Stop</button>
+          </div>
+          <p class=\"text-xs text-slate-500 mt-2\">Use as gentle pace while folding (valley → mountain → turn).</p>
+        </div>
+        <div class=\"rounded-2xl p-5 bg-white border border-slate-200\">
+          <h3 class=\"font-semibold\">Quick Origami: Simple Cup</h3>
+          <ol class=\"list-decimal list-inside text-sm space-y-1\">
+            <li>Start with a square paper (colored side up).</li>
+            <li>Fold in half diagonally to make a triangle.</li>
+            <li>Bring right corner to the left edge (about 1/3 across).</li>
+            <li>Fold left corner to the right edge symmetrically.</li>
+            <li>Fold front top flap down; flip and fold back flap down.</li>
+          </ol>
+          <p class=\"text-xs text-slate-500 mt-2\">Sip water only briefly — it’s paper! Focus on clean creases & steady breathing.</p>
+        </div>
+      </div>
+   </section>
+
+    <section class=\"card\">
+      <h2 class=\"text-lg md:text-xl font-bold mb-2\">Origami Gallery</h2>
+      <p class=\"text-sm text-slate-600 mb-3\">Tap a model to see quick, printable folding steps.</p>
+      <div class=\"grid sm:grid-cols-2 md:grid-cols-5 gap-4\">
+        <button class=\"group\" data-model=\"boat\">
+          <img alt=\"Paper boat\" class=\"w-full aspect-square rounded-2xl shadow group-hover:scale-[1.02] transition\" src=\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><rect width='200' height='200' rx='24' fill='%23e0f2fe'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='72'>🚤</text><text x='50%' y='88%' dominant-baseline='middle' text-anchor='middle' font-size='20' fill='%2303345d'>Boat</text></svg>\"/>
+        </button>
+        <button class=\"group\" data-model=\"airplane\">
+          <img alt=\"Paper airplane\" class=\"w-full aspect-square rounded-2xl shadow group-hover:scale-[1.02] transition\" src=\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><rect width='200' height='200' rx='24' fill='%23ecfeff'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='72'>✈️</text><text x='50%' y='88%' dominant-baseline='middle' text-anchor='middle' font-size='20' fill='%2303345d'>Airplane</text></svg>\"/>
+        </button>
+        <button class=\"group\" data-model=\"crane\">
+          <img alt=\"Paper crane\" class=\"w-full aspect-square rounded-2xl shadow group-hover:scale-[1.02] transition\" src=\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><rect width='200' height='200' rx='24' fill='%23fef3c7'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='72'>🕊️</text><text x='50%' y='88%' dominant-baseline='middle' text-anchor='middle' font-size='20' fill='%236b4000'>Crane</text></svg>\"/>
+        </button>
+        <button class=\"group\" data-model=\"flower\">
+          <img alt=\"Paper flower\" class=\"w-full aspect-square rounded-2xl shadow group-hover:scale-[1.02] transition\" src=\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><rect width='200' height='200' rx='24' fill='%23fee2e2'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='72'>🌸</text><text x='50%' y='88%' dominant-baseline='middle' text-anchor='middle' font-size='20' fill='%23711313'>Flower</text></svg>\"/>
+        </button>
+        <button class=\"group\" data-model=\"frog\">
+          <img alt=\"Paper frog\" class=\"w-full aspect-square rounded-2xl shadow group-hover:scale-[1.02] transition\" src=\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><rect width='200' height='200' rx='24' fill='%23dcfce7'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='72'>🐸</text><text x='50%' y='88%' dominant-baseline='middle' text-anchor='middle' font-size='20' fill='%230a3a1b'>Frog</text></svg>\"/>
+        </button>
+      </div>
+    </section>
+
+    <!-- Modal for model steps -->
+    <div id=\"modelModal\" class=\"fixed inset-0 hidden items-center justify-center bg-black/50 p-4 z-40\">
+      <div class=\"bg-white rounded-2xl shadow-xl max-w-xl w-full p-5 relative\">
+        <button id=\"modalClose\" class=\"pill bg-slate-200 absolute top-3 right-3\">Close</button>
+        <h3 id=\"modelTitle\" class=\"text-lg font-bold mb-2\"></h3>
+        <ol id=\"modelSteps\" class=\"list-decimal list-inside space-y-1 text-sm\"></ol>
+        <p class=\"text-xs text-slate-500 mt-3\">Tip: Fold slowly with a steady exhale; use the metronome for pace.</p>
+      </div>
+    </div>
+
+    <footer class=\"text-xs text-slate-500 pb-10\">
+      <div class=\"flex items-center gap-4 mb-2\">
+        <div>© <span id=\"yr\"></span> Vitals & Origami Analyzer • Recreational / educational only • If this is an emergency, call local medical services immediately.</div>
+        <div class=\"ml-auto noprint flex items-center gap-2\">
+          <span>QR for this site:</span>
+          <img id=\"qr\" alt=\"QR Code\" class=\"w-16 h-16 rounded bg-white border\"/>
+        </div>
+      </div>
     </footer>
   </main>
 
@@ -311,6 +394,92 @@
     // Init
     interpretAll();
     el('yr').textContent = new Date().getFullYear();
+  // Dark mode toggle
+    (function(){
+      const root = document.documentElement;
+      function apply(mode){ if(mode==='dark'){ root.classList.add('dark'); document.body.classList.add('bg-slate-900','text-slate-100'); } else { root.classList.remove('dark'); document.body.classList.remove('bg-slate-900','text-slate-100'); } }
+      const saved = localStorage.getItem('theme'); apply(saved||'light');
+      el('btnDark').addEventListener('click',()=>{ const next = document.documentElement.classList.contains('dark')?'light':'dark'; localStorage.setItem('theme', next); apply(next); });
+    })();
+
+    // QR code (via qrserver)
+    (function(){
+      const url = encodeURIComponent(location.href);
+      const img = el('qr'); if(img) img.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${url}`;
+    })();
+
+    // Breathing ball animation
+    let breathTimer=null, breathPhase=['Inhale','Hold','Exhale','Hold'], breathIdx=0;
+    function setBall(scale){ const b=el('breathBall'); b.style.transform = `translate(-50%,-50%) scale(${scale})`; }
+    el('breathStart').addEventListener('click',()=>{ clearInterval(breathTimer); breathIdx=0; el('breathPhase').textContent='Inhale'; setBall(0.8); let t=0; breathTimer=setInterval(()=>{ t=(t+1)%16; const phase=Math.floor(t/4); if(phase!==breathIdx){ breathIdx=phase; el('breathPhase').textContent=breathPhase[phase]; } const pos = [0.8,1.0,0.8,0.75][phase]; setBall(pos); },1000); });
+    el('breathStop').addEventListener('click',()=>{ clearInterval(breathTimer); el('breathPhase').textContent='Ready'; setBall(1); });
+
+    // Folding metronome (WebAudio)
+    let audioCtx=null, metroInt=null;
+    function tick(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.value=880; g.gain.value=0.001; o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime+0.001); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+0.12); o.stop(audioCtx.currentTime+0.13);}
+    const fpm = el('foldFPM'); const fpmVal = el('foldFPMVal'); fpm.addEventListener('input',()=>{ fpmVal.textContent=fpm.value; if(metroInt){ clearInterval(metroInt); metroInt=setInterval(tick, 60000/parseInt(fpm.value)); }});
+    el('metroStart').addEventListener('click',()=>{ clearInterval(metroInt); metroInt=setInterval(tick, 60000/parseInt(fpm.value)); tick(); });
+    el('metroStop').addEventListener('click',()=>{ clearInterval(metroInt); });
+
+    // Save now appends to a log + CSV export
+    function toCSV(rows){ return rows.map(r=>Object.values(r).map(x=>`"${String(x).replaceAll('"','""')}"`).join(',')).join('
+'); }
+    el('btnSave').addEventListener('click', () => {
+      const payload = {
+        ts: new Date().toISOString(),
+        bpm: el('bpm').value, brpm: el('brpm').value, spm: el('spm').value, sys: el('sys').value, dia: el('dia').value, spo2: el('spo2').value, anx: el('anx').value, notes: el('notes').value, ctx: [...document.querySelectorAll('input[name=\"ctx\"]')].find(r=>r.checked).value, origami: (document.getElementById('origami')?.value)||''
+      };
+      localStorage.setItem('vitals_last', JSON.stringify(payload));
+      const log = JSON.parse(localStorage.getItem('vitals_log')||'[]'); log.push(payload); localStorage.setItem('vitals_log', JSON.stringify(log));
+      alert('Saved locally on this browser.');
+    });
+    el('btnExport').addEventListener('click',()=>{ const log = JSON.parse(localStorage.getItem('vitals_log')||'[]'); if(!log.length) return alert('No saved sessions to export.'); const header = Object.keys(log[0]); const csv = [header.join(','), toCSV(log)].join('
+'); const blob = new Blob([csv], {type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='vitals-origami-log.csv'; a.click(); URL.revokeObjectURL(a.href); });
+  // Origami Gallery logic
+    const MODELS = {
+      boat: {title:'Paper Boat', steps:[
+        'Start with an A4/letter sheet; fold in half (short edges together).',
+        'With the fold at the top, fold corners down to meet the center, forming a triangle with a rectangle under it.',
+        'Fold the bottom front flap up. Flip, fold the other bottom flap up.',
+        'Open the hat shape into a diamond (square) and flatten.',
+        'Fold bottom point up to top point, flip and repeat to make a smaller diamond.',
+        'Open from the bottom — pull the two top corners apart to form the boat. Flatten the base.'
+      ]},
+      airplane: {title:'Paper Airplane (Dart)', steps:[
+        'Start with A4; fold in half lengthwise, then unfold (leave the crease).',
+        'Bring the top two corners to the center crease (kite shape).',
+        'Fold the new top edges to the center again (long narrow triangle).',
+        'Fold the plane in half on the original center crease (flaps outside).',
+        'Fold each wing down so the top edge lines up with the bottom edge.',
+        'Add small wing tips if desired; launch with a gentle level throw.'
+      ]},
+      crane: {title:'Traditional Crane', steps:[
+        'Start with a square; color side up. Fold diagonals; turn over; fold in half both ways. Return to square.',
+        'Collapse into a square base (diamond) by bringing side points in.',
+        'With open end down, fold right and left edges to center; unfold; lift bottom corner up and squash into a long diamond. Repeat on back.',
+        'Fold the top layers’ sides to center (thin kite); fold both “legs” up inside for head and tail.',
+        'Reverse-fold one tip for the head; pull wings out gently and flatten body.'
+      ]},
+      flower: {title:'Simple Tulip', steps:[
+        'Start with a square; fold in half diagonally to make a triangle.',
+        'Bring left and right corners up to the top point, forming a diamond.',
+        'Fold the side points slightly behind to round the tulip.',
+        'Fold the bottom front tip up; flip and fold back tip up.',
+        'Roll a thin stem from a strip of paper; slot into the bottom pocket.'
+      ]},
+      frog: {title:'Jumping Frog', steps:[
+        'Use a 3:2 rectangle (cut a strip from A4).',
+        'Fold in half; open. Fold top corners to the center to form an X, then push in to make a triangle (waterbomb base).',
+        'Fold sides to center line; fold bottom up to meet the base of the triangle.',
+        'Make the rear legs: fold the bottom corners outwards, then fold the whole bottom section up, and in half to create a spring.',
+        'Press on the back and release — the frog jumps!'
+      ]}
+    };
+    function openModel(key){ const m=MODELS[key]; if(!m) return; el('modelTitle').textContent=m.title; el('modelSteps').innerHTML=m.steps.map(s=>`<li>${s}</li>`).join(''); const modal=el('modelModal'); modal.classList.remove('hidden'); modal.classList.add('flex'); }
+    document.querySelectorAll('[data-model]').forEach(btn=>btn.addEventListener('click',()=>openModel(btn.dataset.model)));
+    el('modalClose').addEventListener('click',()=>{ const modal=el('modelModal'); modal.classList.add('hidden'); modal.classList.remove('flex'); });
+    el('modelModal').addEventListener('click',(e)=>{ if(e.target.id==='modelModal'){ const modal=e.currentTarget; modal.classList.add('hidden'); modal.classList.remove('flex'); }});
   </script>
 </body>
 </html>
+
