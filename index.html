@@ -1,199 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Vitals & Origami Analyzer — Kadlag Shivraj</title>
-<meta name="description" content="Neat, printable analyzer for BPM, BRPM, SPM, BP, SpO2, anxiety + origami studio and gallery with visual steps. Educational only, not medical advice.">
+<meta name="description" content="Vitals + Origami studio — survey-first, visual folding steps. Educational only." />
 <style>
-  :root{ --border:#e5e7eb; --brand:#4f46e5; --ink:#0f172a; --muted:#64748b; }
+  :root{
+    --bg:#f6f7fb; --card:#fff; --brand:#4f46e5; --muted:#64748b; --ink:#0f172a; --border:#e5e7eb;
+    --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
+  }
   *{box-sizing:border-box}
-  body{margin:0;background:#f6f7fb;color:var(--ink);font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
-  h1,h2,h3{margin:0 0 .5rem}
-  .wrap{max-width:1100px;margin:auto;padding:16px}
-  header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--border)}
-  header .bar{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 0}
-  .title{font-weight:800;font-size:22px}
-  .card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 4px 16px rgba(15,23,42,.05);margin-bottom:14px}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  body{margin:0;font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1100px;margin:20px auto;padding:16px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+  .title{font-weight:800;font-size:20px}
+  .actions{display:flex;gap:8px}
+  .pill{padding:8px 12px;border-radius:999px;border:1px solid var(--border);background:#fff;cursor:pointer;font-weight:700}
+  .brand{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .ghost{background:#f8fafc}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 6px 18px rgba(15,23,42,.05)}
+  h2{margin:0 0 8px}
+  label{display:block;font-weight:700;margin-bottom:6px}
+  input,select,textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;background:#fff}
+  .grid-2{display:grid;grid-template-columns:1fr 420px;gap:12px}
   .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  label{font-weight:600;font-size:14px;margin-bottom:6px;display:block}
-  input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:12px;font:inherit;background:#fff}
-  .actions{display:flex;gap:8px;flex-wrap:wrap}
-  .pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;border:1px solid var(--border);background:#fff;padding:8px 12px;font-weight:600;font-size:13px;cursor:pointer}
-  .pill.brand{background:var(--brand);color:#fff;border-color:var(--brand)}
-  .pill.ghost{background:#f8fafc}
-  .tag{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-weight:700;font-size:12px;background:#eef2ff;color:#3730a3}
-  .tag.ok{background:#ecfdf5;color:#065f46}
-  .tag.warn{background:#fffbeb;color:#7c2d12}
-  .tag.bad{background:#fef2f2;color:#7f1d1d}
   .muted{color:var(--muted);font-size:13px}
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .score{background:#111827;color:#fff;border-radius:14px;padding:16px}
+  .tag{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700}
+  .score{padding:12px;border-radius:10px;background:#0f172a;color:#fff;font-weight:800}
   .gallery{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
-  .tile{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease}
-  .tile:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(15,23,42,.12)}
-  .thumb{aspect-ratio:1/1;display:grid;place-items:center;font-size:60px}
-  .tile h4{margin:0;padding:10px 12px;border-top:1px solid var(--border);font-size:14px}
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px}
-  .modal .box{background:#fff;border-radius:16px;max-width:760px;width:100%;padding:16px;border:1px solid var(--border)}
+  .tile{border-radius:12px;overflow:hidden;border:1px solid var(--border);cursor:pointer;display:flex;flex-direction:column}
+  .thumb{height:100px;display:grid;place-items:center;font-size:44px}
+  .tile h4{margin:0;padding:8px 10px;border-top:1px solid var(--border);text-align:center}
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);z-index:60;padding:12px}
+  .modal .box{background:#fff;padding:12px;border-radius:10px;max-width:900px;width:100%;border:1px solid var(--border)}
+  .img-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
+  .img-grid img{width:100%;border-radius:8px;border:1px solid var(--border)}
   .list{padding-left:18px}
-  .list li{margin:.25rem 0}
-  footer{margin:24px 0 40px;color:var(--muted);font-size:12px}
-  @media (max-width:900px){.row{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}.gallery{grid-template-columns:repeat(2,1fr)}}
+  footer{margin:18px 0;color:var(--muted);font-size:13px}
+  @media (max-width:1000px){ .grid-2{grid-template-columns:1fr} .gallery{grid-template-columns:repeat(2,1fr)} .img-grid{grid-template-columns:repeat(2,1fr)} }
 </style>
 </head>
 <body>
-  <header>
-    <div class="wrap bar">
+  <div class="wrap">
+    <header>
       <div class="title">Vitals & Origami Analyzer — <span style="color:var(--brand)">Kadlag Shivraj</span></div>
       <div class="actions">
-        <button id="demo" class="pill" type="button">Demo</button>
-        <button id="reset" class="pill ghost" type="button">Reset</button>
-        <button id="printBtn" class="pill brand" type="button">Print / PDF</button>
+        <button id="demo" class="pill">Demo</button>
+        <button id="reset" class="pill ghost">Reset</button>
+        <button id="printBtn" class="pill brand">Print / PDF</button>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main class="wrap" id="app">
-    <section class="card" id="measure">
-      <h2>Enter Measurements</h2>
-      <p class="muted">Educational only — not medical advice.</p>
-
-      <div class="row">
-        <div class="grid-3">
-          <div>
-            <label>Heart rate (BPM)</label>
-            <input id="bpm" type="number" placeholder="72" />
-            <div id="bpmTag" class="tag" style="margin-top:6px">—</div>
-          </div>
-          <div>
-            <label>Breaths/min (BRPM)</label>
-            <input id="brpm" type="number" placeholder="14" />
-            <div id="brpmTag" class="tag" style="margin-top:6px">—</div>
-          </div>
-          <div>
-            <label>Steps/min (SPM)</label>
-            <input id="spm" type="number" placeholder="110" />
-            <div id="spmTag" class="tag" style="margin-top:6px">—</div>
-          </div>
-        </div>
-        <div class="grid-3">
-          <div>
-            <label>Systolic BP</label>
-            <input id="sys" type="number" placeholder="120" />
-            <div id="sysTag" class="tag" style="margin-top:6px">—</div>
-          </div>
-          <div>
-            <label>Diastolic BP</label>
-            <input id="dia" type="number" placeholder="80" />
-            <div id="diaTag" class="tag" style="margin-top:6px">—</div>
-          </div>
-          <div>
-            <label>SpO₂ (%)</label>
-            <input id="spo2" type="number" placeholder="98" />
-            <div id="spo2Tag" class="tag" style="margin-top:6px">—</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:12px">
-        <div class="card">
-          <h3>Self‑rated anxiety (0–10)</h3>
-          <input id="anx" type="range" min="0" max="10" value="3" />
-          <div class="muted">Value: <b id="anxVal">3</b> • <span id="anxTag" class="tag" style="margin-left:6px">—</span></div>
-          <div style="margin-top:10px">
-            <label>Context</label>
-            <select id="ctx">
-              <option value="rest" selected>Resting</option>
-              <option value="active">Active</option>
-            </select>
-          </div>
-          <div style="margin-top:10px">
-            <label>Origami practice today?</label>
-            <select id="origami">
-              <option value="">Select…</option>
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </select>
-          </div>
-          <div style="margin-top:10px"><label>Notes</label><textarea id="notes" rows="3" placeholder="sleep, meds, walk, folding time…"></textarea></div>
-          <div class="actions" style="margin-top:12px">
-            <button id="analyze" class="pill brand" type="button">Analyze</button>
-            <button id="save" class="pill" type="button">Save</button>
-            <button id="load" class="pill ghost" type="button">Load last</button>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Results</h3>
-          <div class="score" id="scoreBox" style="margin:10px 0 12px">Run an analysis</div>
-          <div id="findings"></div>
-          <p class="muted" style="margin-top:10px"><b>Practice:</b> 4‑6 breathing ×10, 5–10 min gentle walking, and simple origami folding for calm focus.</p>
-          <p class="muted"><b>Disclaimer:</b> Recreational / educational only. If readings or symptoms are concerning, consult a qualified doctor.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="card" id="survey">
-      <h2>Focus & Memory Survey</h2>
-      <div class="grid-2">
-        <div class="card">
-          <label>How many minutes did you fold today?</label>
-          <input id="q_minutes" type="number" min="0" placeholder="e.g., 8" />
-          <div style="margin-top:10px"><label>Could you concentrate well?</label>
-            <select id="q_concentrate"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
-          </div>
-          <div style="margin-top:10px"><label>Did you feel patient during folding?</label>
-            <select id="q_patience"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
-          </div>
-          <div style="margin-top:10px"><label>Can you remember how to make a butterfly?</label>
-            <select id="q_butterfly"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
-          </div>
-        </div>
-        <div class="card">
-          <div><label>Did you feel calmer after folding?</label>
-            <select id="q_calm"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
-          </div>
-          <div style="margin-top:10px"><label>Could you ignore distractions?</label>
-            <select id="q_ignore"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
-          </div>
-          <div style="margin-top:10px"><label>Will you practice again tomorrow?</label>
-            <select id="q_tomorrow"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
-          </div>
-          <p class="muted" style="margin-top:10px">These are self-checks to reflect on focus, memory and mood.</p>
-        </div>
-      </div>
-      <div class="actions" style="margin-top:12px"><button id="surveyAnalyze" class="pill brand" type="button">Include survey in analysis</button></div>
-    </section>
-
-    <section class="card" id="studio">
-      <h2>Origami Studio</h2>
-      <div class="grid-2">
-        <div class="card">
-          <h3>Box Breathing (4‑4‑4‑4)</h3>
-          <div class="actions" style="margin:8px 0"><button id="breathStart" class="pill brand" type="button">Start</button><button id="breathStop" class="pill" type="button">Stop</button><span id="breathPhase" class="muted">Ready</span></div>
-          <div style="height:120px;border:1px dashed var(--border);border-radius:12px;display:grid;place-items:center">
-            <div id="ball" style="width:48px;height:48px;border-radius:50%;background:var(--brand);"></div>
-          </div>
-          <p class="muted">Follow the ball: inhale → hold → exhale → hold (1–3 min before measuring).</p>
-        </div>
-        <div class="card">
-          <h3>Quick Origami: Simple Cup</h3>
-          <ol class="list">
-            <li>Square paper, color up. Fold diagonally to triangle.</li>
-            <li>Right corner to left edge (≈1/3 across).</li>
-            <li>Left corner to right edge symmetrically.</li>
-            <li>Fold top front flap down. Flip, fold back flap down.</li>
-            <li>Open the pocket — sip briefly only.</li>
-          </ol>
-        </div>
-      </div>
-    </section>
-
-    <section class="card" id="gallery">
-      <h2>Origami Gallery</h2>
-      <p class="muted" style="margin-bottom:8px">Tap a model to see neat, printable steps.</p>
-      <div class="gallery">
+    <!-- Make Origami prominent: gallery first -->
+    <section class="card" id="galleryCard">
+      <h2 style="display:flex;align-items:center;gap:8px">Origami Gallery <span class="muted" style="font-weight:600;font-size:13px">— tap a model to learn (images + steps)</span></h2>
+      <div class="gallery" style="margin-top:12px">
         <div class="tile" data-model="boat"><div class="thumb" style="background:#e0f2fe">🚤</div><h4>Boat</h4></div>
         <div class="tile" data-model="airplane"><div class="thumb" style="background:#ecfeff">✈️</div><h4>Airplane</h4></div>
         <div class="tile" data-model="crane"><div class="thumb" style="background:#fef3c7">🕊️</div><h4>Crane</h4></div>
@@ -202,137 +64,447 @@
       </div>
     </section>
 
-    <div class="modal" id="modal">
-      <div class="box">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <h3 id="mTitle" style="margin:0"></h3>
-          <button id="mClose" class="pill" type="button">Close</button>
+    <!-- Main content: survey + inputs side by side -->
+    <div class="grid-2">
+      <section class="card" id="surveyCard">
+        <h2>Focus & Memory Survey (short)</h2>
+        <p class="muted">Survey is central — submit this then press "Include survey in analysis" to merge with vitals.</p>
+
+        <label>How many minutes did you fold today?</label>
+        <input id="q_minutes" type="number" min="0" placeholder="e.g., 8" />
+
+        <div style="margin-top:10px">
+          <label>Could you concentrate well?</label>
+          <select id="q_concentrate"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
         </div>
-        <div id="mImgs" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px"></div>
-        <ol id="mSteps" class="list"></ol>
-      </div>
+
+        <div style="margin-top:10px">
+          <label>Did you feel patient during folding?</label>
+          <select id="q_patience"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+        </div>
+
+        <div style="margin-top:10px">
+          <label>Can you remember how to make a butterfly?</label>
+          <select id="q_butterfly"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+        </div>
+
+        <div style="margin-top:10px">
+          <label>Did you feel calmer after folding?</label>
+          <select id="q_calm"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+        </div>
+
+        <div style="margin-top:10px">
+          <label>Could you ignore distractions?</label>
+          <select id="q_ignore"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+        </div>
+
+        <div style="margin-top:10px">
+          <label>Will you practice again tomorrow?</label>
+          <select id="q_tomorrow"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
+        </div>
+
+        <div style="margin-top:12px" class="actions">
+          <button id="surveyAnalyze" class="pill brand" type="button">Include survey in analysis</button>
+          <button id="surveySave" class="pill" type="button">Save survey</button>
+          <button id="surveyLoad" class="pill ghost" type="button">Load last</button>
+        </div>
+      </section>
+
+      <section class="card" id="measureCard">
+        <h2>Enter Measurements</h2>
+        <p class="muted">If you prefer, fill vitals. Survey + origami matter most.</p>
+
+        <div class="grid-3" style="margin-top:8px">
+          <div><label>Heart rate (BPM)</label><input id="bpm" type="number" placeholder="72" /><div id="bpmTag" class="tag" style="margin-top:8px">—</div></div>
+          <div><label>Breaths/min (BRPM)</label><input id="brpm" type="number" placeholder="14" /><div id="brpmTag" class="tag" style="margin-top:8px">—</div></div>
+          <div><label>Steps/min (SPM)</label><input id="spm" type="number" placeholder="110" /><div id="spmTag" class="tag" style="margin-top:8px">—</div></div>
+        </div>
+
+        <div class="grid-3" style="margin-top:12px">
+          <div><label>Systolic BP</label><input id="sys" type="number" placeholder="120" /><div id="sysTag" class="tag" style="margin-top:8px">—</div></div>
+          <div><label>Diastolic BP</label><input id="dia" type="number" placeholder="80" /><div id="diaTag" class="tag" style="margin-top:8px">—</div></div>
+          <div><label>SpO₂ (%)</label><input id="spo2" type="number" placeholder="98" /><div id="spo2Tag" class="tag" style="margin-top:8px">—</div></div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <h3>Origami practice & notes</h3>
+          <div style="margin-top:8px">
+            <label>Origami practiced today?</label>
+            <select id="origami"><option value=""></option><option value="yes">Yes</option><option value="no">No</option></select>
+          </div>
+          <div style="margin-top:8px"><label>Notes</label><textarea id="notes" rows="3" placeholder="sleep, meds, folding details..."></textarea></div>
+
+          <div style="margin-top:12px" class="actions">
+            <button id="analyze" class="pill brand" type="button">Analyze</button>
+            <button id="save" class="pill" type="button">Save session</button>
+            <button id="export" class="pill" type="button">Export CSV</button>
+            <button id="load" class="pill ghost" type="button">Load last</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div id="scoreBox" class="score">Survey first — then Analyze</div>
+          <div id="findings" style="margin-top:10px"></div>
+        </div>
+      </section>
     </div>
 
-    <footer class="wrap">© <span id="yr"></span> • Built by Kadlag Shivraj • Educational only</footer>
-  </main>
+    <!-- Studio -->
+    <section class="card">
+      <h2>Origami Studio</h2>
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-top:8px;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px" class="card">
+          <h3>Box Breathing (4-4-4-4)</h3>
+          <div style="display:flex;gap:8px;align-items:center;margin:8px 0">
+            <button id="breathStart" class="pill brand" type="button">Start</button>
+            <button id="breathStop" class="pill" type="button">Stop</button>
+            <span id="breathPhase" class="muted">Ready</span>
+          </div>
+          <div style="height:120px;border:1px dashed var(--border);border-radius:8px;display:grid;place-items:center">
+            <div id="ball" style="width:56px;height:56px;border-radius:50%;background:var(--brand)"></div>
+          </div>
+          <p class="muted" style="margin-top:8px">Use 1–3 minutes before a session to steady breathing and focus.</p>
+        </div>
+
+        <div style="flex:1;min-width:240px" class="card">
+          <h3>Folding Metronome</h3>
+          <label>Folds per minute</label>
+          <input id="foldFPM" type="range" min="6" max="18" value="10" />
+          <div style="margin-top:8px">Tempo: <span id="foldFPMVal">10</span> fpm</div>
+          <div style="margin-top:8px" class="actions"><button id="metroStart" class="pill brand" type="button">Start</button><button id="metroStop" class="pill" type="button">Stop</button></div>
+          <p class="muted" style="margin-top:8px">Use steady tempo for repetitive folds (calm rhythm).</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="muted">© <span id="yr"></span> • Built by Kadlag Shivraj • Educational only</footer>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="box" role="dialog" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3 id="mTitle" style="margin:0"></h3>
+        <button id="mClose" class="pill" type="button">Close</button>
+      </div>
+      <div id="mImgs" class="img-grid" aria-hidden="false"></div>
+      <ol id="mSteps" class="list"></ol>
+    </div>
+  </div>
 
 <script>
-// helper
+/* helper shorthand */
 const $ = id => document.getElementById(id);
-function tag(el, text, tone){ el.textContent = text; el.className = 'tag ' + (tone||''); }
-$('anx').addEventListener('input', ()=> $('anxVal').textContent = $('anx').value);
 
+/* Defensive: ensure elements exist before binding */
+function bind(id, evt, fn){
+  const el = $(id);
+  if(el) el.addEventListener(evt, fn);
+}
+
+/* small utility to set tag text + tone */
+function setTag(id, text, tone){
+  const el = $(id); if(!el) return;
+  el.textContent = text || '—';
+  el.className = 'tag' + (tone?(' '+tone):'');
+}
+
+/* Interpret vitals (same logic but defensive) */
 function interpret(){
-  const ctx = $('ctx').value;
-  const v={ bpm:+$('bpm').value||NaN, brpm:+$('brpm').value||NaN, spm:+$('spm').value||NaN, sys:+$('sys').value||NaN, dia:+$('dia').value||NaN, spo2:+$('spo2').value||NaN, anx:+$('anx').value||0 };
-  if(!isNaN(v.bpm)){ let t='ok',x='Normal'; if(ctx==='rest'){ if(v.bpm<50){t='warn';x='Low'} if(v.bpm<40){t='bad';x='Bradycardia'} if(v.bpm>90){t='warn';x='High'} if(v.bpm>100){t='bad';x='Tachycardia'} } else { if(v.bpm<70){t='warn';x='Low for activity'} if(v.bpm>180){t='bad';x='Very high'} } tag($('bpmTag'),x,t);} else tag($('bpmTag'),'—');
-  if(!isNaN(v.brpm)){ let t='ok',x='Normal'; if(v.brpm<10){t='warn';x='Low'} if(v.brpm<8){t='bad';x='Very low'} if(v.brpm>20){t='warn';x='High'} if(v.brpm>24){t='bad';x='Very high'}; tag($('brpmTag'),x,t);} else tag($('brpmTag'),'—');
-  if(!isNaN(v.spm)){ let t='ok',x='Moderate walk'; if(v.spm<60){t='warn';x='Very easy'} if(v.spm>=90&&v.spm<120){t='ok';x='Brisk'} if(v.spm>=140){t='warn';x='Near jog'}; tag($('spmTag'),x,t);} else tag($('spmTag'),'—');
+  const ctx = $('ctx') ? $('ctx').value : 'rest';
+  const get = id => { const e=$(id); return e? +e.value : NaN; };
+  const v = { bpm:get('bpm'), brpm:get('brpm'), spm:get('spm'), sys:get('sys'), dia:get('dia'), spo2:get('spo2'), anx: ($( 'anx')? +$('anx').value : 0) };
+  if(!isNaN(v.bpm)){
+    let tone='ok',txt='Normal';
+    if(ctx==='rest'){ if(v.bpm<50){tone='warn';txt='Low'} if(v.bpm<40){tone='bad';txt='Bradycardia'} if(v.bpm>90){tone='warn';txt='High'} if(v.bpm>100){tone='bad';txt='Tachycardia'} }
+    else { if(v.bpm<70){tone='warn';txt='Low for activity'} if(v.bpm>180){tone='bad';txt='Very high'} }
+    setTag('bpmTag',txt,tone);
+  } else setTag('bpmTag','—');
+
+  if(!isNaN(v.brpm)){ let tone='ok',txt='Normal'; if(v.brpm<10){tone='warn';txt='Low'} if(v.brpm<8){tone='bad';txt='Very low'} if(v.brpm>20){tone='warn';txt='High'} if(v.brpm>24){tone='bad';txt='Very high'} setTag('brpmTag',txt,tone);} else setTag('brpmTag','—');
+  if(!isNaN(v.spm)){ let tone='ok',txt='Moderate walk'; if(v.spm<60){tone='warn';txt='Very easy'} if(v.spm>=90&&v.spm<120){tone='ok';txt='Brisk'} if(v.spm>=140){tone='warn';txt='Near jog'} setTag('spmTag',txt,tone);} else setTag('spmTag','—');
+
   function bpCat(s,d){ if(s>=180||d>=120) return ['Hypertensive crisis','bad']; if(s>=140||d>=90) return ['Hypertension (Stage 2)','bad']; if((s>=130&&s<=139)||(d>=80&&d<=89)) return ['Hypertension (Stage 1)','warn']; if(s>=120&&s<=129&&d<80) return ['Elevated','warn']; if(s<120&&d<80) return ['Normal','ok']; return ['—','']; }
-  if(!isNaN(v.sys)&&!isNaN(v.dia)){ const [txt,t] = bpCat(v.sys,v.dia); tag($('sysTag'),txt,t); tag($('diaTag'),txt,t); } else { tag($('sysTag'),'—'); tag($('diaTag'),'—'); }
-  if(!isNaN(v.spo2)){ let t='ok',x='Normal'; if(v.spo2<95){t='warn';x='Below normal'} if(v.spo2<92){t='bad';x='Low'}; tag($('spo2Tag'),x,t);} else tag($('spo2Tag'),'—');
-  let at='ok',ax='Low'; if(v.anx>=4&&v.anx<=6){at='warn';ax='Moderate'} if(v.anx>=7){at='bad';ax='High'}; tag($('anxTag'),ax,at);
+  if(!isNaN(v.sys) && !isNaN(v.dia)){ const [txt,t]=bpCat(v.sys,v.dia); setTag('sysTag',txt,t); setTag('diaTag',txt,t);} else { setTag('sysTag','—'); setTag('diaTag','—'); }
+
+  if(!isNaN(v.spo2)){ let tone='ok',txt='Normal'; if(v.spo2<95){tone='warn';txt='Below normal'} if(v.spo2<92){tone='bad';txt='Low'} setTag('spo2Tag',txt,tone);} else setTag('spo2Tag','—');
+
+  let at='ok',ax='Low'; if(v.anx>=4 && v.anx<=6){ at='warn'; ax='Moderate'; } if(v.anx>=7){ at='bad'; ax='High'; } setTag('anxTag',ax,at);
+
   return v;
 }
 
-function analyze(){
+/* Analyze (includes survey merge later) */
+function analyze(showAlert=false){
   const v = interpret();
-  const ctx = $('ctx').value;
-  let score=100;
-  if(!isNaN(v.bpm)){ if(ctx==='rest'){ if(v.bpm<50) score-=5; if(v.bpm<40) score-=10; if(v.bpm>90) score-=5; if(v.bpm>100) score-=10; } else { if(v.bpm<70) score-=6; if(v.bpm>180) score-=12; }}
+  let score = 100;
+  // BPM
+  if(!isNaN(v.bpm)){ if(v.bpm<50) score-=5; if(v.bpm<40) score-=10; if(v.bpm>90) score-=5; if(v.bpm>100) score-=10; }
   if(!isNaN(v.brpm)){ if(v.brpm<10||v.brpm>20) score-=8; if(v.brpm<8||v.brpm>24) score-=6; }
   if(!isNaN(v.spm)){ if(v.spm<60) score-=3; if(v.spm>=140) score-=3; }
-  if(!isNaN(v.sys)&&!isNaN(v.dia)){ if(v.sys>=180||v.dia>=120) score-=25; else if(v.sys>=140||v.dia>=90) score-=15; else if((v.sys>=130&&v.sys<=139)||(v.dia>=80&&v.dia<=89)) score-=8; else if(v.sys>=120&&v.sys<=129&&v.dia<80) score-=3; }
+  if(!isNaN(v.sys) && !isNaN(v.dia)){ if(v.sys>=180||v.dia>=120) score-=25; else if(v.sys>=140||v.dia>=90) score-=15; else if((v.sys>=130&&v.sys<=139)||(v.dia>=80&&v.dia<=89)) score-=8; else if(v.sys>=120&&v.sys<=129&&v.dia<80) score-=3; }
   if(!isNaN(v.spo2)){ if(v.spo2<95) score-=6; if(v.spo2<92) score-=8; }
   if(!isNaN(v.anx)){ if(v.anx>=4) score-=5; if(v.anx>=7) score-=6; }
-  score=Math.max(0,Math.min(100,Math.round(score)));
-  $('scoreBox').textContent = `Recreational wellness score: ${score}/100`;
+  score = Math.max(0, Math.min(100, Math.round(score)));
 
-  const notes = $('notes').value.trim();
-  const parts=[];
-  parts.push(`• Heart rate: ${isNaN(v.bpm)?'—':v.bpm+' BPM'} (${document.querySelector('#bpmTag').textContent}).`);
-  parts.push(`• Breathing: ${isNaN(v.brpm)?'—':v.brpm+'/min'} (${document.querySelector('#brpmTag').textContent}).`);
-  parts.push(`• Steps: ${isNaN(v.spm)?'—':v.spm+' SPM'} (${document.querySelector('#spmTag').textContent}).`);
-  if(!isNaN(v.sys)&&!isNaN(v.dia)) parts.push(`• BP: ${v.sys}/${v.dia} (${document.querySelector('#sysTag').textContent}).`);
+  // Survey integration (if survey included)
+  const lastSurvey = JSON.parse(localStorage.getItem('vitals_survey') || 'null');
+  let surveySummary = '';
+  if(lastSurvey && lastSurvey.score !== undefined){
+    // Put survey score effect: +/− small final note and influence message
+    surveySummary = `<div style="margin-top:8px;padding:10px;border-radius:8px;background:#fbfbff;border:1px solid ${'#e6e6ff'}">Survey score: <strong>${lastSurvey.score}/14</strong> — ${lastSurvey.tag}. Minutes folded: ${lastSurvey.minutes}.</div>`;
+    // Make survey affect suggestion / emphasis
+    if(lastSurvey.score >= 10){ surveySummary = surveySummary + `<div style="margin-top:6px;color:var(--ok)">Nice focus — origami practice is helping.</div>`; }
+    else if(lastSurvey.score >= 6){ surveySummary = surveySummary + `<div style="margin-top:6px;color:var(--warn)">Mixed results — try shorter sessions or metronome pace.</div>`; }
+    else { surveySummary = surveySummary + `<div style="margin-top:6px;color:var(--bad)">Low focus today — try 2–5 minutes of box breathing then a very simple fold.</div>`; }
+  }
+
+  // Origami note
+  const orig = $('origami') ? $('origami').value : '';
+  const origText = orig === 'yes' ? '🦢 Origami today: Positive — steady folding aids focus.' : orig === 'no' ? '🦢 Origami: Try 5–10 min for grounding.' : '';
+
+  // Build findings
+  const parts = [];
+  parts.push(`• Heart rate: ${isNaN(v.bpm)?'—':v.bpm+' BPM'} (${$('bpmTag')?$('bpmTag').textContent:'—'}).`);
+  parts.push(`• Breathing: ${isNaN(v.brpm)?'—':v.brpm+'/min'} (${$('brpmTag')?$('brpmTag').textContent:'—'}).`);
+  parts.push(`• Steps cadence: ${isNaN(v.spm)?'—':v.spm+' SPM'} (${$('spmTag')?$('spmTag').textContent:'—'}).`);
+  if(!isNaN(v.sys) && !isNaN(v.dia)) parts.push(`• BP: ${v.sys}/${v.dia} mmHg (${$('sysTag')?$('sysTag').textContent:'—'}).`);
   if(!isNaN(v.spo2)) parts.push(`• SpO₂: ${v.spo2}%.`);
-  parts.push(`• Anxiety: ${v.anx}/10 (${document.querySelector('#anxTag').textContent}).`);
-  const og = $('origami').value==='yes' ? '🦢 Origami: Positive — steady folding aids focus.' : $('origami').value==='no' ? '🦢 Origami: Try 5–10 min for grounding.' : '';
-  if(og) parts.push(og);
+  parts.push(`• Anxiety (self-rated): ${isNaN(v.anx)?'—':v.anx+'/10'} (${$('anxTag')?$('anxTag').textContent:'—'}).`);
+  if(origText) parts.push(origText);
+  const notes = $('notes') ? $('notes').value.trim() : '';
   if(notes) parts.push('🗒️ '+notes);
-  $('findings').innerHTML = '<div>'+parts.join('<br>')+'</div>';
+
+  $('scoreBox').textContent = `Wellness score: ${score}/100`;
+  $('findings').innerHTML = '<div style="margin-top:8px">' + parts.join('<br>') + '</div>' + surveySummary;
+
+  if(showAlert) alert('Analysis complete. Scroll to results.');
 }
 
-// buttons
-$('analyze').addEventListener('click', analyze);
-$('demo').addEventListener('click', ()=>{ $('bpm').value=76; $('brpm').value=14; $('spm').value=112; $('sys').value=124; $('dia').value=82; $('spo2').value=97; $('anx').value=4; $('anxVal').textContent='4'; $('origami').value='yes'; interpret(); });
-$('reset').addEventListener('click', ()=>{ document.querySelectorAll('input,textarea,select').forEach(x=>{ if(x.type==='range') x.value=3; else x.value=''; }); $('ctx').value='rest'; $('anxVal').textContent='3'; ['bpmTag','brpmTag','spmTag','sysTag','diaTag','spo2Tag','anxTag'].forEach(id=>tag($(id),'—')); $('findings').innerHTML=''; $('scoreBox').textContent='Run an analysis'; });
-$('printBtn').addEventListener('click', ()=>window.print());
-$('save').addEventListener('click', ()=>{ const payload={ ts:new Date().toISOString(), ctx:$('ctx').value, bpm:$('bpm').value, brpm:$('brpm').value, spm:$('spm').value, sys:$('sys').value, dia:$('dia').value, spo2:$('spo2').value, anx:$('anx').value, origami:$('origami').value, notes:$('notes').value }; localStorage.setItem('vitals_last', JSON.stringify(payload)); alert('Saved in this browser.'); });
-$('load').addEventListener('click', ()=>{ const raw=localStorage.getItem('vitals_last'); if(!raw) return alert('No saved session'); const p=JSON.parse(raw); ['bpm','brpm','spm','sys','dia','spo2','anx','notes','ctx','origami'].forEach(k=>{ if($(k) && p[k]!==undefined) $(k).value=p[k]; }); $('anxVal').textContent=$('anx').value; interpret(); });
+/* Survey scoring & validation */
+function scoreSurveyObj(){
+  const map = { 'Yes':2, 'Maybe':1, 'No':0, '':0 };
+  const minutes = parseInt(($('q_minutes')?$('q_minutes').value:'0')||'0',10) || 0;
+  const keys = ['q_concentrate','q_patience','q_butterfly','q_calm','q_ignore','q_tomorrow'];
+  const answers = {};
+  let s = 0;
+  for(const k of keys){ const v = ($(k)?$(k).value:''); answers[k]=v; s += (map[v]||0); }
+  const boost = (minutes >= 10 ? 2 : (minutes >= 5 ? 1 : 0));
+  const total = s + boost; // out of max 14
+  const tag = total >= 10 ? 'Great focus & recall' : total >= 6 ? 'Mixed — keep practicing' : 'Low today — try short sessions';
+  return { score: total, minutes, tag, answers };
+}
 
-// Breathing ball
-let breath=null; $('breathStart').addEventListener('click',()=>{ clearInterval(breath); let t=0; $('breathPhase').textContent='Inhale'; $('ball').style.transform='scale(0.8)'; breath=setInterval(()=>{ t=(t+1)%16; const phase=Math.floor(t/4); const map=['Inhale','Hold','Exhale','Hold']; $('breathPhase').textContent=map[phase]; const sz=[0.8,1.0,0.8,0.7][phase]; $('ball').style.transform=`scale(${sz})`; },1000); }); $('breathStop').addEventListener('click',()=>{ clearInterval(breath); $('breathPhase').textContent='Ready'; $('ball').style.transform='scale(1)'; });
+/* Button handlers */
+bind('surveyAnalyze','click', ()=> {
+  // validate minimal required fields: minutes and at least one answer (otherwise allow)
+  const obj = scoreSurveyObj();
+  // Save survey to localStorage (so analyze picks it up)
+  localStorage.setItem('vitals_survey', JSON.stringify(obj));
+  // Immediately integrate into analysis and show summary
+  analyze(true);
+});
 
-// Gallery modal content
-const MODELS={
-  boat:['Fold A4 in half (short sides).','Fold top corners down to center (hat).','Fold bottom flap up; flip; fold other flap up.','Open into diamond; flatten.','Fold bottom point up; flip; repeat.','Pull top corners apart to open the boat.'],
-  airplane:['Fold A4 in half lengthwise; unfold.','Top corners to center crease.','Top edges to center again.','Fold in half.','Fold wings down to bottom edge.','Add small wing tips; gentle throw.'],
-  crane:['Square; diagonals + halves. Collapse to square base.','Open-squash bottom to long diamond (both sides).','Sides to center; inside reverse-fold legs up.','Reverse-fold head; pull wings out.'],
-  flower:['Square to triangle.','Corners up to top (diamond).','Tuck side points behind slightly.','Fold bottom tips up (front and back).','Add rolled stem and insert.'],
-  frog:['3:2 rectangle.','Make waterbomb base at top.','Sides to center; bottom up.','Rear legs out; fold bottom up and in half.','Press and release to jump!']
+bind('surveySave','click', ()=> {
+  const obj = scoreSurveyObj();
+  localStorage.setItem('vitals_survey', JSON.stringify(obj));
+  alert('Survey saved locally.');
+});
+
+bind('surveyLoad','click', ()=> {
+  const raw = localStorage.getItem('vitals_survey');
+  if(!raw) return alert('No saved survey.');
+  const p = JSON.parse(raw);
+  ['q_minutes','q_concentrate','q_patience','q_butterfly','q_calm','q_ignore','q_tomorrow'].forEach(k=>{ if($(k) && p.answers && p.answers[k]!==undefined) $(k).value = p.answers[k]; });
+  if($('q_minutes')) $('q_minutes').value = p.minutes || 0;
+  alert('Loaded last survey. Click "Include survey in analysis" to merge.');
+});
+
+/* Analyze, Demo, Save session, Load, Export CSV */
+bind('analyze','click', ()=> analyze(true));
+bind('demo','click', ()=> {
+  if($('bpm')) $('bpm').value=76;
+  if($('brpm')) $('brpm').value=14;
+  if($('spm')) $('spm').value=112;
+  if($('sys')) $('sys').value=124;
+  if($('dia')) $('dia').value=82;
+  if($('spo2')) $('spo2').value=97;
+  if($('anx')) $('anx').value=4;
+  if($('origami')) $('origami').value='yes';
+  interpret();
+  alert('Demo values filled. Click Analyze to compute.');
+});
+
+bind('reset','click', ()=> {
+  document.querySelectorAll('input,textarea,select').forEach(e => {
+    if(e.type === 'range') e.value = e.defaultValue || 0;
+    else e.value = '';
+  });
+  if($('anx')) $('anx').value = 3;
+  if($('foldFPM')) $('foldFPM').value = 10;
+  interpret();
+  $('scoreBox').textContent = 'Survey first — then Analyze';
+  $('findings').innerHTML = '';
+  localStorage.removeItem('vitals_last');
+});
+
+bind('save','click', ()=> {
+  const payload = {
+    ts: new Date().toISOString(),
+    bpm: $('bpm')?$('bpm').value:'', brpm: $('brpm')?$('brpm').value:'', spm: $('spm')?$('spm').value:'',
+    sys: $('sys')?$('sys').value:'', dia: $('dia')?$('dia').value:'', spo2: $('spo2')?$('spo2').value:'',
+    anx: $('anx')?$('anx').value:'', origami: $('origami')?$('origami').value:'', notes: $('notes')?$('notes').value:''
+  };
+  localStorage.setItem('vitals_last', JSON.stringify(payload));
+  // append to log
+  const log = JSON.parse(localStorage.getItem('vitals_log') || '[]'); log.push(payload); localStorage.setItem('vitals_log', JSON.stringify(log));
+  alert('Session saved locally.');
+});
+
+bind('load','click', ()=> {
+  const raw = localStorage.getItem('vitals_last'); if(!raw) return alert('No saved session');
+  const p = JSON.parse(raw);
+  ['bpm','brpm','spm','sys','dia','spo2','anx','notes','origami'].forEach(k=>{ if($(k) && p[k]!==undefined) $(k).value = p[k]; });
+  interpret();
+  alert('Loaded last session.');
+});
+
+bind('export','click', ()=> {
+  const log = JSON.parse(localStorage.getItem('vitals_log') || '[]');
+  if(!log.length) return alert('No saved sessions');
+  const header = Object.keys(log[0]);
+  const csv = [ header.join(','), ...log.map(r => header.map(h => `"${String(r[h]||'').replace(/"/g,'""')}"`).join(',') ) ].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'vitals-origami-log.csv'; a.click(); URL.revokeObjectURL(a.href);
+});
+
+/* Breathing ball */
+let breathTimer = null;
+bind('breathStart','click', ()=> {
+  clearInterval(breathTimer); let t = 0; $('breathPhase').textContent = 'Inhale'; $('ball').style.transform = 'scale(0.8)';
+  breathTimer = setInterval(()=>{ t=(t+1)%16; const phase = Math.floor(t/4); const map=['Inhale','Hold','Exhale','Hold']; $('breathPhase').textContent = map[phase]; const sz = [0.8,1.0,0.8,0.7][phase]; $('ball').style.transform = `scale(${sz})`; }, 1000);
+});
+bind('breathStop','click', ()=> { clearInterval(breathTimer); $('breathPhase').textContent = 'Ready'; $('ball').style.transform = 'scale(1)'; });
+
+/* Metronome (audio) */
+let audioCtx = null, metroInt = null;
+bind('metroStart','click', ()=> {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  clearInterval(metroInt);
+  const fpm = document.getElementById('foldFPM');
+  const bpm = parseInt(fpm?fpm.value:10,10) || 10;
+  metroInt = setInterval(()=> {
+    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+    o.type='sine'; o.frequency.value = 880; g.gain.value = 0.001;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); g.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.001);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12);
+    o.stop(audioCtx.currentTime + 0.13);
+  }, 60000 / bpm);
+});
+bind('metroStop','click', ()=> clearInterval(metroInt));
+bind('foldFPM','input', ()=> { if($('foldFPMVal')) $('foldFPMVal').textContent = $('foldFPM')?$('foldFPM').value:10; });
+
+/* Origami models + inline SVG generation (create DOM nodes so images are always visible) */
+const MODELS = {
+  boat: { title: 'Paper Boat', steps: [
+    'Fold A4 in half (short edges together).',
+    'Fold top corners down to meet center (hat).',
+    'Fold bottom flap up; flip and fold other flap up.',
+    'Open hat into diamond; flatten.',
+    'Fold bottom point up to top point; repeat on other side.',
+    'Open from bottom and pull corners apart to form the boat.'
+  ]},
+  airplane: { title: 'Paper Airplane (Dart)', steps: [
+    'Fold A4 lengthwise (crease) and unfold.',
+    'Bring top corners to the center crease to make a kite.',
+    'Fold top edges to center again (narrow nose).',
+    'Fold plane in half (center crease), then wings down.',
+    'Adjust wing tips and throw gently.'
+  ]},
+  crane: { title: 'Traditional Crane', steps: [
+    'Start square: fold diagonals and halves; collapse to square base.',
+    'Fold kite edges to center; squash to long diamond (both sides).',
+    'Inside reverse-fold legs to make head/tail.',
+    'Reverse-fold one tip for head; pull wings out gently.'
+  ]},
+  flower: { title: 'Simple Tulip', steps: [
+    'Start square; fold diagonally to triangle.',
+    'Bring left & right corners to top (diamond).',
+    'Tuck sides slightly behind and fold bottom tip up.',
+    'Add a paper stem and insert into bottom pocket.'
+  ]},
+  frog: { title: 'Jumping Frog', steps: [
+    'Start with 3:2 rectangle; fold waterbomb base.',
+    'Fold sides to center, fold bottom up to form legs.',
+    'Create spring by folding bottom up and in half.',
+    'Press back and release to make it jump.'
+  ]}
 };
 
-// Simple inline SVG thumbnails for each model
-function svg(label, shape){
-  const bg = '#ffffff'; const border = '%23e5e7eb';
-  return 'data:image/svg+xml;utf8,'+
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 160'>`+
-    `<rect width='240' height='160' rx='16' fill='${bg}' stroke='${border}'/>`+shape+
-    `<text x='12' y='148' font-size='12' fill='%2364748b'>${label}</text>`+
-    `</svg>`;
+/* utility to create a simple SVG thumbnail element (DOM node) for a given label and simple shape */
+function makeSVGThumb(label, type){
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox','0 0 240 160');
+  svg.setAttribute('width','240'); svg.setAttribute('height','160');
+  svg.style.width = '100%'; svg.style.borderRadius = '8px'; svg.style.border = '1px solid #e5e7eb';
+  const rect = document.createElementNS(ns,'rect'); rect.setAttribute('width','240'); rect.setAttribute('height','160'); rect.setAttribute('rx','12'); rect.setAttribute('fill','#fff'); rect.setAttribute('stroke','#e5e7eb');
+  svg.appendChild(rect);
+  // simple shapes per type
+  if(type==='boat'){
+    const path = document.createElementNS(ns,'polygon'); path.setAttribute('points','30,110 120,70 210,110'); path.setAttribute('fill','#4f46e5'); svg.appendChild(path);
+  } else if(type==='airplane'){
+    const path = document.createElementNS(ns,'polygon'); path.setAttribute('points','30,40 210,80 30,120'); path.setAttribute('fill','#4f46e5'); svg.appendChild(path);
+  } else if(type==='crane'){
+    const path = document.createElementNS(ns,'polygon'); path.setAttribute('points','120,20 40,120 200,120'); path.setAttribute('fill','#fde68a'); svg.appendChild(path);
+  } else if(type==='flower'){
+    const circle = document.createElementNS(ns,'circle'); circle.setAttribute('cx','120'); circle.setAttribute('cy','70'); circle.setAttribute('r','28'); circle.setAttribute('fill','#fecaca'); svg.appendChild(circle);
+  } else if(type==='frog'){
+    const rectb = document.createElementNS(ns,'rect'); rectb.setAttribute('x','60'); rectb.setAttribute('y','80'); rectb.setAttribute('width','120'); rectb.setAttribute('height','40'); rectb.setAttribute('fill','#9ae6b4'); svg.appendChild(rectb);
+  }
+  const txt = document.createElementNS(ns,'text'); txt.setAttribute('x','12'); txt.setAttribute('y','150'); txt.setAttribute('fill','#64748b'); txt.setAttribute('font-size','12'); txt.textContent = label;
+  svg.appendChild(txt);
+  return svg;
 }
-function boatImgs(){ return [
-  svg('Fold in half',"<path d='M20 80 H220' stroke='%2303345d' stroke-width='3'/><polygon points='120,45 132,80 108,80' fill='%2303345d'/>"),
-  svg('Corners down',"<polygon points='120,40 40,100 200,100' fill='%23a5b4fc' stroke='%233730a3'/>"),
-  svg('Open diamond',"<polygon points='120,30 40,80 120,130 200,80' fill='%2395a5ff' stroke='%233730a3'/>"),
-  svg('Open boat',"<polygon points='30,110 120,70 210,110' fill='%234f46e5' />") ]; }
-function planeImgs(){ return [
-  svg('Half + crease',"<rect x='30' y='30' width='180' height='100' fill='%23e2e8f0' stroke='%236b7280'/><line x1='120' y1='30' x2='120' y2='130' stroke='%236b7280' stroke-dasharray='6'/>"),
-  svg('Corners to center',"<polygon points='120,30 60,80 120,80' fill='%23a7f3d0'/><polygon points='120,30 120,80 180,80' fill='%23a7f3d0'/>"),
-  svg('Wings',"<polygon points='120,40 60,120 180,120' fill='%234f46e5'/>") ]; }
-function craneImgs(){ return [
-  svg('Square base',"<polygon points='120,30 30,120 120,120 210,120' fill='%23fde68a' stroke='%236b4000'/>"),
-  svg('Long diamond',"<polygon points='120,20 80,140 120,120 160,140' fill='%23fde68a' stroke='%236b4000'/>"),
-  svg('Wings out',"<path d='M60 120 Q120 60 180 120' stroke='%236b4000' fill='none' stroke-width='4'/>") ]; }
-function flowerImgs(){ return [
-  svg('Triangle',"<polygon points='30,120 120,30 210,120' fill='%23fecaca' stroke='%23711313'/>"),
-  svg('Diamond',"<polygon points='120,20 60,80 120,140 180,80' fill='%23fecaca' stroke='%23711313'/>"),
-  svg('Stem',"<rect x='116' y='100' width='8' height='40' fill='%230a3a1b'/>") ]; }
-function frogImgs(){ return [
-  svg('Waterbomb base',"<polygon points='120,30 30,80 120,130 210,80' fill='%23bbf7d0' stroke='%230a3a1b'/>"),
-  svg('Fold up',"<rect x='105' y='60' width='30' height='40' fill='%230a3a1b'/>"),
-  svg('Jump',"<path d='M40 120 Q120 60 200 120' stroke='%230a3a1b' fill='none' stroke-width='4'/>") ]; }
-const MODEL_IMGS={boat:boatImgs,airplane:planeImgs,crane:craneImgs,flower:flowerImgs,frog:frogImgs};
 
+/* openModal builds inline SVGs + step list */
 function openModel(key){
-  $('mTitle').textContent = ({boat:'Paper Boat',airplane:'Paper Airplane',crane:'Traditional Crane',flower:'Simple Tulip',frog:'Jumping Frog'})[key] || 'Origami';
-  const steps = MODELS[key] || [];
-  const imgs = (MODEL_IMGS[key]||(()=>[]))();
-  $('mSteps').innerHTML = steps.map(s=>`<li>${s}</li>`).join('');
-  $('mImgs').innerHTML = imgs.map(src=>`<img src="${src}" style="width:100%;border:1px solid #e5e7eb;border-radius:8px">`).join('');
-  document.getElementById('modal').style.display='flex';
+  const model = MODELS[key];
+  if(!model) return;
+  $('mTitle').textContent = model.title;
+  $('mSteps').innerHTML = model.steps.map(s => `<li>${s}</li>`).join('');
+  const imgsEl = $('mImgs');
+  imgsEl.innerHTML = '';
+  // create 3-4 thumbnails
+  for(let i=0;i<Math.min(4, model.steps.length); i++){
+    const thumb = makeSVGThumb(model.steps[i].slice(0,22)+'…', key);
+    // wrap in div to keep grid styling
+    const wrap = document.createElement('div');
+    wrap.appendChild(thumb);
+    imgsEl.appendChild(wrap);
+  }
+  document.getElementById('modal').style.display = 'flex';
 }
-Array.from(document.querySelectorAll('.tile')).forEach(t=>t.addEventListener('click',()=>openModel(t.dataset.model)));
-$('mClose').addEventListener('click',()=> document.getElementById('modal').style.display='none');
-document.getElementById('modal').addEventListener('click',e=>{ if(e.target.id==='modal') e.currentTarget.style.display='none'; });
 
-// init
-$('yr').textContent=new Date().getFullYear();
+/* bind tile clicks */
+document.querySelectorAll('.tile').forEach(t => t.addEventListener('click', ()=> openModel(t.dataset.model)));
+bind('mClose','click', ()=> document.getElementById('modal').style.display = 'none');
+document.getElementById('modal').addEventListener('click', e => { if(e.target.id === 'modal') e.currentTarget.style.display = 'none'; });
+
+/* init */
+$('yr').textContent = new Date().getFullYear();
 interpret();
 
-// survey include
-function scoreSurvey(){ const map={'Yes':2,'Maybe':1,'No':0}; const m=parseInt(($('q_minutes').value||'0'),10); const s=['q_concentrate','q_patience','q_butterfly','q_calm','q_ignore','q_tomorrow'].map(id=>map[$(id).value]||0).reduce((a,b)=>a+b,0); const boost=(m>=5?1:0)+(m>=10?1:0); return s+boost; }
-$('surveyAnalyze').addEventListener('click',()=>{ analyze(); const sv=scoreSurvey(); const tag = sv>=10? 'Great focus & recall' : sv>=6? 'Mixed — keep practicing' : 'Low today — try shorter sessions'; const extra = `<div style='margin-top:8px'><b>Survey:</b> ${sv}/14 — ${tag}. Minutes: ${$('q_minutes').value||0}. Concentrate: ${$('q_concentrate').value||'-'}, Patience: ${$('q_patience').value||'-'}, Butterfly memory: ${$('q_butterfly').value||'-'}, Calm: ${$('q_calm').value||'-'}, Ignore distractions: ${$('q_ignore').value||'-'}, Practice tomorrow: ${$('q_tomorrow').value||'-'}.</div>`; const f=$('findings'); f.innerHTML = f.innerHTML + extra; });
+/* Small error-reporting overlay (only visible if an exception occurs) */
+window.addEventListener('error', function(evt){
+  try{
+    const d = document.createElement('div');
+    d.style.position='fixed'; d.style.bottom='12px'; d.style.left='12px'; d.style.background='#fee2e2'; d.style.color='#7f1d1d';
+    d.style.padding='8px 10px'; d.style.border='1px solid #fecaca'; d.style.borderRadius='8px'; d.style.zIndex=9999; d.style.fontSize='12px';
+    d.textContent = 'Script error: ' + (evt && evt.message ? evt.message : 'unknown');
+    document.body.appendChild(d);
+  }catch(e){}
+});
 </script>
 </body>
 </html>
