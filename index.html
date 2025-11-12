@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Vitals & Origami Analyzer — Kadlag Shivraj</title>
-<meta name="description" content="Vitals + Origami studio — survey-first, visual folding steps. Educational only." />
+<meta name="description" content="Vitals + Origami studio — visual folding steps + tutorial videos. Educational only." />
 <style>
   :root{
     --bg:#f6f7fb; --card:#fff; --brand:#4f46e5; --muted:#64748b; --ink:#0f172a; --border:#e5e7eb;
@@ -39,6 +39,8 @@
   .list{padding-left:18px}
   footer{margin:18px 0;color:var(--muted);font-size:13px}
   @media (max-width:1000px){ .grid-2{grid-template-columns:1fr} .gallery{grid-template-columns:repeat(2,1fr)} .img-grid{grid-template-columns:repeat(2,1fr)} }
+  /* small helper for links inside modal */
+  .link-btn{display:inline-block;padding:8px 10px;border-radius:8px;background:#f8fafc;border:1px solid var(--border);text-decoration:none;color:var(--ink);font-weight:700;margin-right:8px}
 </style>
 </head>
 <body>
@@ -46,15 +48,15 @@
     <header>
       <div class="title">Vitals & Origami Analyzer — <span style="color:var(--brand)">Kadlag Shivraj</span></div>
       <div class="actions">
-        <button id="demo" class="pill">Demo</button>
-        <button id="reset" class="pill ghost">Reset</button>
-        <button id="printBtn" class="pill brand">Print / PDF</button>
+        <button id="demo" class="pill" type="button">Demo</button>
+        <button id="reset" class="pill ghost" type="button">Reset</button>
+        <button id="printBtn" class="pill brand" type="button">Print / PDF</button>
       </div>
     </header>
 
-    <!-- Make Origami prominent: gallery first -->
+    <!-- Origami gallery first -->
     <section class="card" id="galleryCard">
-      <h2 style="display:flex;align-items:center;gap:8px">Origami Gallery <span class="muted" style="font-weight:600;font-size:13px">— tap a model to learn (images + steps)</span></h2>
+      <h2 style="display:flex;align-items:center;gap:8px">Origami Gallery <span class="muted" style="font-weight:600;font-size:13px">— tap a model to learn (images + video)</span></h2>
       <div class="gallery" style="margin-top:12px">
         <div class="tile" data-model="boat"><div class="thumb" style="background:#e0f2fe">🚤</div><h4>Boat</h4></div>
         <div class="tile" data-model="airplane"><div class="thumb" style="background:#ecfeff">✈️</div><h4>Airplane</h4></div>
@@ -64,11 +66,11 @@
       </div>
     </section>
 
-    <!-- Main content: survey + inputs side by side -->
+    <!-- Survey + Inputs -->
     <div class="grid-2">
       <section class="card" id="surveyCard">
         <h2>Focus & Memory Survey (short)</h2>
-        <p class="muted">Survey is central — submit this then press "Include survey in analysis" to merge with vitals.</p>
+        <p class="muted">Survey is central — submit this, then press "Include survey in analysis".</p>
 
         <label>How many minutes did you fold today?</label>
         <input id="q_minutes" type="number" min="0" placeholder="e.g., 8" />
@@ -77,27 +79,22 @@
           <label>Could you concentrate well?</label>
           <select id="q_concentrate"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
         </div>
-
         <div style="margin-top:10px">
           <label>Did you feel patient during folding?</label>
           <select id="q_patience"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
         </div>
-
         <div style="margin-top:10px">
           <label>Can you remember how to make a butterfly?</label>
           <select id="q_butterfly"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
         </div>
-
         <div style="margin-top:10px">
           <label>Did you feel calmer after folding?</label>
           <select id="q_calm"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
         </div>
-
         <div style="margin-top:10px">
           <label>Could you ignore distractions?</label>
           <select id="q_ignore"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
         </div>
-
         <div style="margin-top:10px">
           <label>Will you practice again tomorrow?</label>
           <select id="q_tomorrow"><option value=""></option><option>Yes</option><option>Maybe</option><option>No</option></select>
@@ -112,7 +109,7 @@
 
       <section class="card" id="measureCard">
         <h2>Enter Measurements</h2>
-        <p class="muted">If you prefer, fill vitals. Survey + origami matter most.</p>
+        <p class="muted">If you prefer, fill vitals. Survey & origami are the priority.</p>
 
         <div class="grid-3" style="margin-top:8px">
           <div><label>Heart rate (BPM)</label><input id="bpm" type="number" placeholder="72" /><div id="bpmTag" class="tag" style="margin-top:8px">—</div></div>
@@ -149,7 +146,6 @@
       </section>
     </div>
 
-    <!-- Studio -->
     <section class="card">
       <h2>Origami Studio</h2>
       <div style="display:flex;gap:12px;align-items:flex-start;margin-top:8px;flex-wrap:wrap">
@@ -189,99 +185,68 @@
       </div>
       <div id="mImgs" class="img-grid" aria-hidden="false"></div>
       <ol id="mSteps" class="list"></ol>
+      <div id="mVideo" style="margin-top:10px"></div>
+      <div style="margin-top:8px">
+        <a id="mLink" class="link-btn" href="#" target="_blank" rel="noopener">Open source page</a>
+      </div>
     </div>
   </div>
 
 <script>
-/* helper shorthand */
+/* Helper */
 const $ = id => document.getElementById(id);
+function bind(id, evt, fn){ const el=$(id); if(el) el.addEventListener(evt, fn); }
+function setTag(id, text, tone){ const el=$(id); if(!el) return; el.textContent = text||'—'; el.className = 'tag' + (tone?(' '+tone):''); }
 
-/* Defensive: ensure elements exist before binding */
-function bind(id, evt, fn){
-  const el = $(id);
-  if(el) el.addEventListener(evt, fn);
-}
+/* Resources: thumbnails, video IDs, step pages */
+const MODEL_RESOURCES = {
+  boat: {
+    title: 'Paper Boat',
+    thumbs: ['https://img.youtube.com/vi/vNba3jbBSOw/hqdefault.jpg','https://img.youtube.com/vi/b3QZpBL8-Tg/hqdefault.jpg'],
+    steps_page: 'https://origami.me/boat/',
+    videoId: 'vNba3jbBSOw'
+  },
+  airplane: {
+    title: 'Paper Airplane (Dart)',
+    thumbs: ['https://img.youtube.com/vi/gZQI1Z_viNg/hqdefault.jpg','https://img.youtube.com/vi/dCrxMJcVuyw/hqdefault.jpg'],
+    steps_page: 'https://origami.me/easy-origami/',
+    videoId: 'gZQI1Z_viNg'
+  },
+  crane: {
+    title: 'Traditional Crane',
+    thumbs: ['https://img.youtube.com/vi/NXs0ckqVYwg/hqdefault.jpg'],
+    steps_page: 'https://www.origamiway.com/origami-crane/',
+    videoId: 'NXs0ckqVYwg'
+  },
+  flower: {
+    title: 'Simple Tulip',
+    thumbs: ['https://img.youtube.com/vi/na4XF5zVn6w/hqdefault.jpg'],
+    steps_page: 'https://www.instructables.com/Origami-Tulips/',
+    videoId: 'na4XF5zVn6w'
+  },
+  frog: {
+    title: 'Jumping Frog',
+    thumbs: ['https://img.youtube.com/vi/UY6xg6Y1a2g/hqdefault.jpg'], // fallback YouTube frog tutorial id used
+    steps_page: 'https://origami.me/jumping-frog/',
+    videoId: 'UY6xg6Y1a2g'
+  }
+};
 
-/* small utility to set tag text + tone */
-function setTag(id, text, tone){
-  const el = $(id); if(!el) return;
-  el.textContent = text || '—';
-  el.className = 'tag' + (tone?(' '+tone):'');
-}
-
-/* Interpret vitals (same logic but defensive) */
+/* Interpret vitals (defensive) */
 function interpret(){
-  const ctx = $('ctx') ? $('ctx').value : 'rest';
   const get = id => { const e=$(id); return e? +e.value : NaN; };
   const v = { bpm:get('bpm'), brpm:get('brpm'), spm:get('spm'), sys:get('sys'), dia:get('dia'), spo2:get('spo2'), anx: ($( 'anx')? +$('anx').value : 0) };
-  if(!isNaN(v.bpm)){
-    let tone='ok',txt='Normal';
-    if(ctx==='rest'){ if(v.bpm<50){tone='warn';txt='Low'} if(v.bpm<40){tone='bad';txt='Bradycardia'} if(v.bpm>90){tone='warn';txt='High'} if(v.bpm>100){tone='bad';txt='Tachycardia'} }
-    else { if(v.bpm<70){tone='warn';txt='Low for activity'} if(v.bpm>180){tone='bad';txt='Very high'} }
-    setTag('bpmTag',txt,tone);
-  } else setTag('bpmTag','—');
-
+  if(!isNaN(v.bpm)){ let tone='ok',txt='Normal'; if(v.bpm<50){tone='warn';txt='Low'} if(v.bpm<40){tone='bad';txt='Bradycardia'} if(v.bpm>90){tone='warn';txt='High'} if(v.bpm>100){tone='bad';txt='Tachycardia'} setTag('bpmTag',txt,tone);} else setTag('bpmTag','—');
   if(!isNaN(v.brpm)){ let tone='ok',txt='Normal'; if(v.brpm<10){tone='warn';txt='Low'} if(v.brpm<8){tone='bad';txt='Very low'} if(v.brpm>20){tone='warn';txt='High'} if(v.brpm>24){tone='bad';txt='Very high'} setTag('brpmTag',txt,tone);} else setTag('brpmTag','—');
   if(!isNaN(v.spm)){ let tone='ok',txt='Moderate walk'; if(v.spm<60){tone='warn';txt='Very easy'} if(v.spm>=90&&v.spm<120){tone='ok';txt='Brisk'} if(v.spm>=140){tone='warn';txt='Near jog'} setTag('spmTag',txt,tone);} else setTag('spmTag','—');
-
   function bpCat(s,d){ if(s>=180||d>=120) return ['Hypertensive crisis','bad']; if(s>=140||d>=90) return ['Hypertension (Stage 2)','bad']; if((s>=130&&s<=139)||(d>=80&&d<=89)) return ['Hypertension (Stage 1)','warn']; if(s>=120&&s<=129&&d<80) return ['Elevated','warn']; if(s<120&&d<80) return ['Normal','ok']; return ['—','']; }
   if(!isNaN(v.sys) && !isNaN(v.dia)){ const [txt,t]=bpCat(v.sys,v.dia); setTag('sysTag',txt,t); setTag('diaTag',txt,t);} else { setTag('sysTag','—'); setTag('diaTag','—'); }
-
   if(!isNaN(v.spo2)){ let tone='ok',txt='Normal'; if(v.spo2<95){tone='warn';txt='Below normal'} if(v.spo2<92){tone='bad';txt='Low'} setTag('spo2Tag',txt,tone);} else setTag('spo2Tag','—');
-
   let at='ok',ax='Low'; if(v.anx>=4 && v.anx<=6){ at='warn'; ax='Moderate'; } if(v.anx>=7){ at='bad'; ax='High'; } setTag('anxTag',ax,at);
-
   return v;
 }
 
-/* Analyze (includes survey merge later) */
-function analyze(showAlert=false){
-  const v = interpret();
-  let score = 100;
-  // BPM
-  if(!isNaN(v.bpm)){ if(v.bpm<50) score-=5; if(v.bpm<40) score-=10; if(v.bpm>90) score-=5; if(v.bpm>100) score-=10; }
-  if(!isNaN(v.brpm)){ if(v.brpm<10||v.brpm>20) score-=8; if(v.brpm<8||v.brpm>24) score-=6; }
-  if(!isNaN(v.spm)){ if(v.spm<60) score-=3; if(v.spm>=140) score-=3; }
-  if(!isNaN(v.sys) && !isNaN(v.dia)){ if(v.sys>=180||v.dia>=120) score-=25; else if(v.sys>=140||v.dia>=90) score-=15; else if((v.sys>=130&&v.sys<=139)||(v.dia>=80&&v.dia<=89)) score-=8; else if(v.sys>=120&&v.sys<=129&&v.dia<80) score-=3; }
-  if(!isNaN(v.spo2)){ if(v.spo2<95) score-=6; if(v.spo2<92) score-=8; }
-  if(!isNaN(v.anx)){ if(v.anx>=4) score-=5; if(v.anx>=7) score-=6; }
-  score = Math.max(0, Math.min(100, Math.round(score)));
-
-  // Survey integration (if survey included)
-  const lastSurvey = JSON.parse(localStorage.getItem('vitals_survey') || 'null');
-  let surveySummary = '';
-  if(lastSurvey && lastSurvey.score !== undefined){
-    // Put survey score effect: +/− small final note and influence message
-    surveySummary = `<div style="margin-top:8px;padding:10px;border-radius:8px;background:#fbfbff;border:1px solid ${'#e6e6ff'}">Survey score: <strong>${lastSurvey.score}/14</strong> — ${lastSurvey.tag}. Minutes folded: ${lastSurvey.minutes}.</div>`;
-    // Make survey affect suggestion / emphasis
-    if(lastSurvey.score >= 10){ surveySummary = surveySummary + `<div style="margin-top:6px;color:var(--ok)">Nice focus — origami practice is helping.</div>`; }
-    else if(lastSurvey.score >= 6){ surveySummary = surveySummary + `<div style="margin-top:6px;color:var(--warn)">Mixed results — try shorter sessions or metronome pace.</div>`; }
-    else { surveySummary = surveySummary + `<div style="margin-top:6px;color:var(--bad)">Low focus today — try 2–5 minutes of box breathing then a very simple fold.</div>`; }
-  }
-
-  // Origami note
-  const orig = $('origami') ? $('origami').value : '';
-  const origText = orig === 'yes' ? '🦢 Origami today: Positive — steady folding aids focus.' : orig === 'no' ? '🦢 Origami: Try 5–10 min for grounding.' : '';
-
-  // Build findings
-  const parts = [];
-  parts.push(`• Heart rate: ${isNaN(v.bpm)?'—':v.bpm+' BPM'} (${$('bpmTag')?$('bpmTag').textContent:'—'}).`);
-  parts.push(`• Breathing: ${isNaN(v.brpm)?'—':v.brpm+'/min'} (${$('brpmTag')?$('brpmTag').textContent:'—'}).`);
-  parts.push(`• Steps cadence: ${isNaN(v.spm)?'—':v.spm+' SPM'} (${$('spmTag')?$('spmTag').textContent:'—'}).`);
-  if(!isNaN(v.sys) && !isNaN(v.dia)) parts.push(`• BP: ${v.sys}/${v.dia} mmHg (${$('sysTag')?$('sysTag').textContent:'—'}).`);
-  if(!isNaN(v.spo2)) parts.push(`• SpO₂: ${v.spo2}%.`);
-  parts.push(`• Anxiety (self-rated): ${isNaN(v.anx)?'—':v.anx+'/10'} (${$('anxTag')?$('anxTag').textContent:'—'}).`);
-  if(origText) parts.push(origText);
-  const notes = $('notes') ? $('notes').value.trim() : '';
-  if(notes) parts.push('🗒️ '+notes);
-
-  $('scoreBox').textContent = `Wellness score: ${score}/100`;
-  $('findings').innerHTML = '<div style="margin-top:8px">' + parts.join('<br>') + '</div>' + surveySummary;
-
-  if(showAlert) alert('Analysis complete. Scroll to results.');
-}
-
-/* Survey scoring & validation */
+/* Survey scoring */
 function scoreSurveyObj(){
   const map = { 'Yes':2, 'Maybe':1, 'No':0, '':0 };
   const minutes = parseInt(($('q_minutes')?$('q_minutes').value:'0')||'0',10) || 0;
@@ -295,212 +260,160 @@ function scoreSurveyObj(){
   return { score: total, minutes, tag, answers };
 }
 
-/* Button handlers */
+/* Analysis (merge survey if available) */
+function analyze(showAlert=false){
+  const v = interpret();
+  let score = 100;
+  if(!isNaN(v.bpm)){ if(v.bpm<50) score-=5; if(v.bpm<40) score-=10; if(v.bpm>90) score-=5; if(v.bpm>100) score-=10; }
+  if(!isNaN(v.brpm)){ if(v.brpm<10||v.brpm>20) score-=8; if(v.brpm<8||v.brpm>24) score-=6; }
+  if(!isNaN(v.spm)){ if(v.spm<60) score-=3; if(v.spm>=140) score-=3; }
+  if(!isNaN(v.sys) && !isNaN(v.dia)){ if(v.sys>=180||v.dia>=120) score-=25; else if(v.sys>=140||v.dia>=90) score-=15; else if((v.sys>=130&&v.sys<=139)||(v.dia>=80&&v.dia<=89)) score-=8; else if(v.sys>=120&&v.sys<=129&&v.dia<80) score-=3; }
+  if(!isNaN(v.spo2)){ if(v.spo2<95) score-=6; if(v.spo2<92) score-=8; }
+  if(!isNaN(v.anx)){ if(v.anx>=4) score-=5; if(v.anx>=7) score-=6; }
+  score = Math.max(0, Math.min(100, Math.round(score)));
+
+  const lastSurvey = JSON.parse(localStorage.getItem('vitals_survey') || 'null');
+  let surveySummary = '';
+  if(lastSurvey && lastSurvey.score !== undefined){
+    surveySummary = `<div style="margin-top:8px;padding:10px;border-radius:8px;background:#fbfbff;border:1px solid #e6e6ff">Survey score: <strong>${lastSurvey.score}/14</strong> — ${lastSurvey.tag}. Minutes folded: ${lastSurvey.minutes}.</div>`;
+    if(lastSurvey.score >= 10){ surveySummary += `<div style="margin-top:6px;color:var(--ok)">Nice focus — origami practice is helping.</div>`; }
+    else if(lastSurvey.score >= 6){ surveySummary += `<div style="margin-top:6px;color:var(--warn)">Mixed results — try shorter sessions or metronome pace.</div>`; }
+    else { surveySummary += `<div style="margin-top:6px;color:var(--bad)">Low focus today — try 2–5 minutes of box breathing then a very simple fold.</div>`; }
+  }
+
+  const orig = $('origami') ? $('origami').value : '';
+  const origText = orig === 'yes' ? '🦢 Origami today: Positive — steady folding aids focus.' : orig === 'no' ? '🦢 Origami: Try 5–10 min for grounding.' : '';
+
+  const parts = [];
+  parts.push(`• Heart rate: ${isNaN(v.bpm)?'—':v.bpm+' BPM'} (${$('bpmTag')?$('bpmTag').textContent:'—'}).`);
+  parts.push(`• Breathing: ${isNaN(v.brpm)?'—':v.brpm+'/min'} (${$('brpmTag')?$('brpmTag').textContent:'—'}).`);
+  parts.push(`• Steps cadence: ${isNaN(v.spm)?'—':v.spm+' SPM'} (${$('spmTag')?$('spmTag').textContent:'—'}).`);
+  if(!isNaN(v.sys) && !isNaN(v.dia)) parts.push(`• BP: ${v.sys}/${v.dia} mmHg (${$('sysTag')?$('sysTag').textContent:'—'}).`);
+  if(!isNaN(v.spo2)) parts.push(`• SpO₂: ${v.spo2}%.`);
+  parts.push(`• Anxiety (self-rated): ${isNaN(v.anx)?'—':v.anx+'/10'} (${$('anxTag')?$('anxTag').textContent:'—'}).`);
+  if(origText) parts.push(origText);
+  const notes = $('notes') ? $('notes').value.trim() : '';
+  if(notes) parts.push('🗒️ '+notes);
+
+  $('scoreBox').textContent = `Wellness score: ${score}/100`;
+  $('findings').innerHTML = '<div style="margin-top:8px">' + parts.join('<br>') + '</div>' + surveySummary;
+  if(showAlert) alert('Analysis complete.');
+}
+
+/* Survey handlers */
 bind('surveyAnalyze','click', ()=> {
-  // validate minimal required fields: minutes and at least one answer (otherwise allow)
   const obj = scoreSurveyObj();
-  // Save survey to localStorage (so analyze picks it up)
   localStorage.setItem('vitals_survey', JSON.stringify(obj));
-  // Immediately integrate into analysis and show summary
   analyze(true);
 });
-
-bind('surveySave','click', ()=> {
-  const obj = scoreSurveyObj();
-  localStorage.setItem('vitals_survey', JSON.stringify(obj));
-  alert('Survey saved locally.');
-});
-
+bind('surveySave','click', ()=> { const obj = scoreSurveyObj(); localStorage.setItem('vitals_survey', JSON.stringify(obj)); alert('Survey saved locally.'); });
 bind('surveyLoad','click', ()=> {
-  const raw = localStorage.getItem('vitals_survey');
-  if(!raw) return alert('No saved survey.');
+  const raw = localStorage.getItem('vitals_survey'); if(!raw) return alert('No saved survey.');
   const p = JSON.parse(raw);
   ['q_minutes','q_concentrate','q_patience','q_butterfly','q_calm','q_ignore','q_tomorrow'].forEach(k=>{ if($(k) && p.answers && p.answers[k]!==undefined) $(k).value = p.answers[k]; });
   if($('q_minutes')) $('q_minutes').value = p.minutes || 0;
   alert('Loaded last survey. Click "Include survey in analysis" to merge.');
 });
 
-/* Analyze, Demo, Save session, Load, Export CSV */
+/* Basic session handlers */
 bind('analyze','click', ()=> analyze(true));
 bind('demo','click', ()=> {
-  if($('bpm')) $('bpm').value=76;
-  if($('brpm')) $('brpm').value=14;
-  if($('spm')) $('spm').value=112;
-  if($('sys')) $('sys').value=124;
-  if($('dia')) $('dia').value=82;
-  if($('spo2')) $('spo2').value=97;
-  if($('anx')) $('anx').value=4;
-  if($('origami')) $('origami').value='yes';
-  interpret();
-  alert('Demo values filled. Click Analyze to compute.');
+  if($('bpm')) $('bpm').value=76; if($('brpm')) $('brpm').value=14; if($('spm')) $('spm').value=112;
+  if($('sys')) $('sys').value=124; if($('dia')) $('dia').value=82; if($('spo2')) $('spo2').value=97;
+  if($('origami')) $('origami').value='yes'; interpret(); alert('Demo values filled. Click Analyze to compute.');
 });
-
 bind('reset','click', ()=> {
-  document.querySelectorAll('input,textarea,select').forEach(e => {
-    if(e.type === 'range') e.value = e.defaultValue || 0;
-    else e.value = '';
-  });
-  if($('anx')) $('anx').value = 3;
-  if($('foldFPM')) $('foldFPM').value = 10;
-  interpret();
-  $('scoreBox').textContent = 'Survey first — then Analyze';
-  $('findings').innerHTML = '';
-  localStorage.removeItem('vitals_last');
+  document.querySelectorAll('input,textarea,select').forEach(e=>{ if(e.type==='range') e.value = e.defaultValue || 0; else e.value=''; });
+  if($('anx')) $('anx').value = 3; if($('foldFPM')) $('foldFPM').value = 10;
+  interpret(); $('scoreBox').textContent='Survey first — then Analyze'; $('findings').innerHTML=''; localStorage.removeItem('vitals_last');
 });
-
 bind('save','click', ()=> {
-  const payload = {
-    ts: new Date().toISOString(),
-    bpm: $('bpm')?$('bpm').value:'', brpm: $('brpm')?$('brpm').value:'', spm: $('spm')?$('spm').value:'',
-    sys: $('sys')?$('sys').value:'', dia: $('dia')?$('dia').value:'', spo2: $('spo2')?$('spo2').value:'',
-    anx: $('anx')?$('anx').value:'', origami: $('origami')?$('origami').value:'', notes: $('notes')?$('notes').value:''
-  };
+  const payload = { ts:new Date().toISOString(), bpm:$('bpm')?$('bpm').value:'', brpm:$('brpm')?$('brpm').value:'', spm:$('spm')?$('spm').value:'', sys:$('sys')?$('sys').value:'', dia:$('dia')?$('dia').value:'', spo2:$('spo2')?$('spo2').value:'', origami:$('origami')?$('origami').value:'', notes:$('notes')?$('notes').value:'' };
   localStorage.setItem('vitals_last', JSON.stringify(payload));
-  // append to log
-  const log = JSON.parse(localStorage.getItem('vitals_log') || '[]'); log.push(payload); localStorage.setItem('vitals_log', JSON.stringify(log));
-  alert('Session saved locally.');
+  const log = JSON.parse(localStorage.getItem('vitals_log') || '[]'); log.push(payload); localStorage.setItem('vitals_log', JSON.stringify(log)); alert('Session saved locally.');
 });
-
 bind('load','click', ()=> {
   const raw = localStorage.getItem('vitals_last'); if(!raw) return alert('No saved session');
-  const p = JSON.parse(raw);
-  ['bpm','brpm','spm','sys','dia','spo2','anx','notes','origami'].forEach(k=>{ if($(k) && p[k]!==undefined) $(k).value = p[k]; });
-  interpret();
-  alert('Loaded last session.');
+  const p = JSON.parse(raw); ['bpm','brpm','spm','sys','dia','spo2','anx','notes','origami'].forEach(k=>{ if($(k) && p[k]!==undefined) $(k).value = p[k]; });
+  interpret(); alert('Loaded last session.');
 });
-
 bind('export','click', ()=> {
-  const log = JSON.parse(localStorage.getItem('vitals_log') || '[]');
-  if(!log.length) return alert('No saved sessions');
+  const log = JSON.parse(localStorage.getItem('vitals_log') || '[]'); if(!log.length) return alert('No saved sessions');
   const header = Object.keys(log[0]);
-  const csv = [ header.join(','), ...log.map(r => header.map(h => `"${String(r[h]||'').replace(/"/g,'""')}"`).join(',') ) ].join('\n');
-  const blob = new Blob([csv], {type:'text/csv'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'vitals-origami-log.csv'; a.click(); URL.revokeObjectURL(a.href);
+  const csv = [header.join(','), ...log.map(r => header.map(h => `"${String(r[h]||'').replace(/"/g,'""')}"`).join(','))].join('\n');
+  const blob = new Blob([csv], {type:'text/csv'}); const a=document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='vitals-origami-log.csv'; a.click(); URL.revokeObjectURL(a.href);
 });
 
-/* Breathing ball */
+/* Breathing */
 let breathTimer = null;
-bind('breathStart','click', ()=> {
-  clearInterval(breathTimer); let t = 0; $('breathPhase').textContent = 'Inhale'; $('ball').style.transform = 'scale(0.8)';
-  breathTimer = setInterval(()=>{ t=(t+1)%16; const phase = Math.floor(t/4); const map=['Inhale','Hold','Exhale','Hold']; $('breathPhase').textContent = map[phase]; const sz = [0.8,1.0,0.8,0.7][phase]; $('ball').style.transform = `scale(${sz})`; }, 1000);
-});
-bind('breathStop','click', ()=> { clearInterval(breathTimer); $('breathPhase').textContent = 'Ready'; $('ball').style.transform = 'scale(1)'; });
+bind('breathStart','click', ()=> { clearInterval(breathTimer); let t=0; $('breathPhase').textContent='Inhale'; $('ball').style.transform='scale(0.8)'; breathTimer=setInterval(()=>{ t=(t+1)%16; const phase=Math.floor(t/4); const map=['Inhale','Hold','Exhale','Hold']; $('breathPhase').textContent = map[phase]; const sz=[0.8,1.0,0.8,0.7][phase]; $('ball').style.transform = `scale(${sz})`; },1000); });
+bind('breathStop','click', ()=> { clearInterval(breathTimer); $('breathPhase').textContent='Ready'; $('ball').style.transform='scale(1)'; });
 
-/* Metronome (audio) */
-let audioCtx = null, metroInt = null;
+/* Metronome */
+let audioCtx=null, metroInt=null;
 bind('metroStart','click', ()=> {
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
   clearInterval(metroInt);
-  const fpm = document.getElementById('foldFPM');
-  const bpm = parseInt(fpm?fpm.value:10,10) || 10;
-  metroInt = setInterval(()=> {
-    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-    o.type='sine'; o.frequency.value = 880; g.gain.value = 0.001;
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(); g.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime + 0.001);
-    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12);
-    o.stop(audioCtx.currentTime + 0.13);
-  }, 60000 / bpm);
+  const bpm = parseInt($('foldFPM')?$('foldFPM').value:10,10) || 10;
+  metroInt = setInterval(()=>{ const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type='sine'; o.frequency.value=880; g.gain.value=0.001; o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(0.2, audioCtx.currentTime+0.001); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+0.12); o.stop(audioCtx.currentTime+0.13); }, 60000/bpm);
 });
 bind('metroStop','click', ()=> clearInterval(metroInt));
 bind('foldFPM','input', ()=> { if($('foldFPMVal')) $('foldFPMVal').textContent = $('foldFPM')?$('foldFPM').value:10; });
 
-/* Origami models + inline SVG generation (create DOM nodes so images are always visible) */
-const MODELS = {
-  boat: { title: 'Paper Boat', steps: [
-    'Fold A4 in half (short edges together).',
-    'Fold top corners down to meet center (hat).',
-    'Fold bottom flap up; flip and fold other flap up.',
-    'Open hat into diamond; flatten.',
-    'Fold bottom point up to top point; repeat on other side.',
-    'Open from bottom and pull corners apart to form the boat.'
-  ]},
-  airplane: { title: 'Paper Airplane (Dart)', steps: [
-    'Fold A4 lengthwise (crease) and unfold.',
-    'Bring top corners to the center crease to make a kite.',
-    'Fold top edges to center again (narrow nose).',
-    'Fold plane in half (center crease), then wings down.',
-    'Adjust wing tips and throw gently.'
-  ]},
-  crane: { title: 'Traditional Crane', steps: [
-    'Start square: fold diagonals and halves; collapse to square base.',
-    'Fold kite edges to center; squash to long diamond (both sides).',
-    'Inside reverse-fold legs to make head/tail.',
-    'Reverse-fold one tip for head; pull wings out gently.'
-  ]},
-  flower: { title: 'Simple Tulip', steps: [
-    'Start square; fold diagonally to triangle.',
-    'Bring left & right corners to top (diamond).',
-    'Tuck sides slightly behind and fold bottom tip up.',
-    'Add a paper stem and insert into bottom pocket.'
-  ]},
-  frog: { title: 'Jumping Frog', steps: [
-    'Start with 3:2 rectangle; fold waterbomb base.',
-    'Fold sides to center, fold bottom up to form legs.',
-    'Create spring by folding bottom up and in half.',
-    'Press back and release to make it jump.'
-  ]}
-};
-
-/* utility to create a simple SVG thumbnail element (DOM node) for a given label and simple shape */
-function makeSVGThumb(label, type){
-  const ns = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(ns,'svg');
-  svg.setAttribute('viewBox','0 0 240 160');
-  svg.setAttribute('width','240'); svg.setAttribute('height','160');
-  svg.style.width = '100%'; svg.style.borderRadius = '8px'; svg.style.border = '1px solid #e5e7eb';
-  const rect = document.createElementNS(ns,'rect'); rect.setAttribute('width','240'); rect.setAttribute('height','160'); rect.setAttribute('rx','12'); rect.setAttribute('fill','#fff'); rect.setAttribute('stroke','#e5e7eb');
-  svg.appendChild(rect);
-  // simple shapes per type
-  if(type==='boat'){
-    const path = document.createElementNS(ns,'polygon'); path.setAttribute('points','30,110 120,70 210,110'); path.setAttribute('fill','#4f46e5'); svg.appendChild(path);
-  } else if(type==='airplane'){
-    const path = document.createElementNS(ns,'polygon'); path.setAttribute('points','30,40 210,80 30,120'); path.setAttribute('fill','#4f46e5'); svg.appendChild(path);
-  } else if(type==='crane'){
-    const path = document.createElementNS(ns,'polygon'); path.setAttribute('points','120,20 40,120 200,120'); path.setAttribute('fill','#fde68a'); svg.appendChild(path);
-  } else if(type==='flower'){
-    const circle = document.createElementNS(ns,'circle'); circle.setAttribute('cx','120'); circle.setAttribute('cy','70'); circle.setAttribute('r','28'); circle.setAttribute('fill','#fecaca'); svg.appendChild(circle);
-  } else if(type==='frog'){
-    const rectb = document.createElementNS(ns,'rect'); rectb.setAttribute('x','60'); rectb.setAttribute('y','80'); rectb.setAttribute('width','120'); rectb.setAttribute('height','40'); rectb.setAttribute('fill','#9ae6b4'); svg.appendChild(rectb);
-  }
-  const txt = document.createElementNS(ns,'text'); txt.setAttribute('x','12'); txt.setAttribute('y','150'); txt.setAttribute('fill','#64748b'); txt.setAttribute('font-size','12'); txt.textContent = label;
-  svg.appendChild(txt);
-  return svg;
-}
-
-/* openModal builds inline SVGs + step list */
+/* Gallery modal opening: builds thumbnails, fills steps and embeds YouTube (if present) */
 function openModel(key){
-  const model = MODELS[key];
-  if(!model) return;
-  $('mTitle').textContent = model.title;
-  $('mSteps').innerHTML = model.steps.map(s => `<li>${s}</li>`).join('');
-  const imgsEl = $('mImgs');
-  imgsEl.innerHTML = '';
-  // create 3-4 thumbnails
-  for(let i=0;i<Math.min(4, model.steps.length); i++){
-    const thumb = makeSVGThumb(model.steps[i].slice(0,22)+'…', key);
-    // wrap in div to keep grid styling
-    const wrap = document.createElement('div');
-    wrap.appendChild(thumb);
-    imgsEl.appendChild(wrap);
+  const res = MODEL_RESOURCES[key];
+  if(!res) return;
+  $('mTitle').textContent = res.title || key;
+  $('mSteps').innerHTML = ''; $('mImgs').innerHTML = ''; $('mVideo').innerHTML = ''; $('mLink').href = res.steps_page || '#';
+  // thumbnails: clickable to open full size in new tab
+  (res.thumbs || []).forEach(src => {
+    const img = document.createElement('img'); img.src = src; img.alt = res.title; img.loading='lazy';
+    img.style.cursor = 'pointer';
+    img.addEventListener('click', ()=> window.open(src, '_blank'));
+    $('mImgs').appendChild(img);
+  });
+  // steps (if resource page exists, we provide steps from our small internal list or link)
+  const modelSteps = (function(){
+    if(key === 'boat') return ['Fold A4 in half (short edges together).','Fold top corners down to meet center (hat).','Fold bottom flap up; flip and fold other flap up.','Open hat into diamond; flatten.','Fold bottom point up to top point; repeat.','Open to form boat.'];
+    if(key === 'airplane') return ['Fold A4 lengthwise (crease) and unfold.','Bring top corners to center crease.','Fold top edges to center again.','Fold plane in half and fold wings down.','Adjust wings & fling gently.'];
+    if(key === 'crane') return ['Start square: fold diagonals and halves; collapse into square base.','Fold kite edges to center; squash to long diamond.','Reverse-fold legs and head; pull wings out.'];
+    if(key === 'flower') return ['Square to triangle.','Bring corners up to top (diamond).','Tuck sides to round petals.','Fold bottom tip up and add stem.'];
+    if(key === 'frog') return ['Start 3:2 rectangle.','Make waterbomb base.','Fold bottom up to form legs.','Create spring fold; press and release to jump.'];
+    return [];
+  })();
+  $('mSteps').innerHTML = modelSteps.map(s => `<li>${s}</li>`).join('');
+  // video embed fallback
+  if(res.videoId){
+    const iframe = document.createElement('iframe');
+    iframe.width = '100%';
+    iframe.height = '360';
+    iframe.src = `https://www.youtube.com/embed/${res.videoId}?rel=0`;
+    iframe.title = `${res.title} tutorial`;
+    iframe.frameBorder = '0';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    iframe.allowFullscreen = true;
+    $('mVideo').appendChild(iframe);
+  } else {
+    // if no video id, show link to steps page
+    $('mVideo').innerHTML = `<div class="muted">No video available. Open the source page below for step photos.</div>`;
   }
   document.getElementById('modal').style.display = 'flex';
 }
-
-/* bind tile clicks */
 document.querySelectorAll('.tile').forEach(t => t.addEventListener('click', ()=> openModel(t.dataset.model)));
-bind('mClose','click', ()=> document.getElementById('modal').style.display = 'none');
-document.getElementById('modal').addEventListener('click', e => { if(e.target.id === 'modal') e.currentTarget.style.display = 'none'; });
+bind('mClose','click', ()=> document.getElementById('modal').style.display='none');
+document.getElementById('modal').addEventListener('click', e => { if(e.target.id==='modal') e.currentTarget.style.display='none'; });
 
 /* init */
 $('yr').textContent = new Date().getFullYear();
 interpret();
 
-/* Small error-reporting overlay (only visible if an exception occurs) */
+/* minor error banner in case an exception happens (will show on page). */
 window.addEventListener('error', function(evt){
   try{
     const d = document.createElement('div');
-    d.style.position='fixed'; d.style.bottom='12px'; d.style.left='12px'; d.style.background='#fee2e2'; d.style.color='#7f1d1d';
-    d.style.padding='8px 10px'; d.style.border='1px solid #fecaca'; d.style.borderRadius='8px'; d.style.zIndex=9999; d.style.fontSize='12px';
+    d.style.position='fixed'; d.style.bottom='12px'; d.style.left='12px'; d.style.background='#fee2e2';
+    d.style.color='#7f1d1d'; d.style.padding='8px 10px'; d.style.border='1px solid #fecaca'; d.style.borderRadius='8px'; d.style.zIndex=9999; d.style.fontSize='12px';
     d.textContent = 'Script error: ' + (evt && evt.message ? evt.message : 'unknown');
     document.body.appendChild(d);
   }catch(e){}
@@ -508,6 +421,7 @@ window.addEventListener('error', function(evt){
 </script>
 </body>
 </html>
+
 
 
 
